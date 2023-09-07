@@ -19,7 +19,7 @@ module.exports = {
   getAllCategories: async () => {
     try {
       await connectDB();
-      return await Category.find({ categoryBlock: false }).sort({ _id: -1 });
+      return await Category.find().sort({ _id: -1 });
     } catch (err) {
       console.log(err);
     }
