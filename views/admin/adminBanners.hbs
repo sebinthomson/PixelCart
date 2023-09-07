@@ -1,0 +1,74 @@
+<body class="vertical light">
+  <div class="wrapper">
+    {{>adminSidebar}}
+    <main role="main" class="main-content">
+      <div class="container-fluid">
+        <div class="row justify-content-center">
+          <div class="col-12">
+            {{>adminHeader}}
+            <a href="/admin/add-banner"><button type="button" class="btn mb-2 btn-primary">Add Banner</button></a>
+            <table class="table table-borderless table-striped">
+              <thead>
+                <tr role="row">
+                  <th>Banner Title</th>
+                  <th>Banner Image</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody>
+                {{#if banners.length}}
+                  {{#each banners}}
+                  <tr>
+                    <th scope="col">{{this.titleOne}},<br>{{this.titleTwo}},<br>{{this.titleThree}},<br>{{this.titleFour}}</th>
+                    <td><img style="width:100px;height:50px" src="/banner-images/{{this._id}}.jpg"></td>
+                  </td>
+                    <td>
+                      <a href="/admin/admineditbanner?bannerId={{this._id}}"><button type="button"
+                          class="btn mb-2 btn-primary">Edit</button></a>
+                      {{#if this.isDeleted}}
+                      <a href='/admin/adminrecoverbanner?bannerId={{this._id}}'><button type="button"
+                          class="btn mb-2 btn-success">Recover</button></a>
+                      {{else}}
+                      <a href='/admin/admindeletebanner?bannerId={{this._id}}'><button type="button"
+                          class="btn mb-2 btn-danger">Delete</button></a>
+                      {{/if}}
+                    </td>
+                  </tr>
+                  {{/each}}
+                {{/if}}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <div>
+        <div class="col-lg-12">
+          <div class="pagination" style="display: flex; justify-content: center;">
+            <ul style="list-style: none; padding: 0; margin: 0; display: flex; align-items: center;">
+                  {{#if (gt currentPage 1)}}
+                  <li style="margin-right: 10px;"><a href="/admin/admin-banners?page={{sub currentPage 1}}"><button
+                        class="btn mb-2 btn-primary">Previous</button></a></li>
+                  {{/if}}
+
+                  {{#each pages}}
+                  {{#if (eq this ../currentPage)}}
+                  <li style="margin-right: 10px;" class="active"><a href="#"><button type="button"
+                        class="btn mb-2 btn-secondary" style="background-color: rgb(62, 64, 64);">{{this}}</button></a></li>
+                  {{else}}
+                  <li style="margin-right: 10px;"><a href="/admin/admin-banners?page={{this}}"><button type="button"
+                        class="btn mb-2 btn-secondary">{{this}}</button></a></li>
+                  {{/if}}
+                  {{/each}}
+
+                  {{#if (lt currentPage totalPages)}}
+                  <li style="margin-right: 10px;"><a href="/admin/admin-banners?page={{add currentPage 1}}"><button
+                        class="btn mb-2 btn-primary">Next</button></a></li>
+                  {{/if}}
+                </ul>
+          </div>
+        </div>
+      </div>
+    </main>
+  </div>
+</body>

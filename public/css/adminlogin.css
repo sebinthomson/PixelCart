@@ -1,0 +1,197 @@
+    /*======  Main Css Rules  for Main Elements in The project  =====*/
+    
+    body {
+        width: 100%;
+        min-height: 100vh;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        padding: 15px;
+        background-image: url("https://c4.wallpaperflare.com/wallpaper/67/926/344/black-background-camera-technology-wallpaper-preview.jpg");
+        background-size: cover;
+        
+    }
+    
+    * {
+        box-sizing: border-box;
+    }
+    
+    a {
+        text-decoration: none;
+        transition: all .3s ease-in-out
+    }
+    /*======   End of Main Css Rules  ====== */
+    
+    .mainLogin {
+        width: 100%;
+        height: 100%;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+    
+    .login {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+    
+    .lgn {
+        width: 900px;
+        background: #FFF;
+        border-radius: 10px;
+        overflow: hidden;
+        padding: 70px 60px;
+    }
+    
+    .lgn .img {
+        margin-bottom: 70px;
+    }
+    
+    .login-form {
+        margin-left: 80px;
+    }
+    
+    .login-form h4 {
+        font-size: 32px;
+        text-align: center;
+        margin-bottom: 70px;
+        text-transform: capitalize;
+        color: #020064
+    }
+    
+    .login-form .form-group {
+        margin: 15px 0;
+        display: flex;
+        align-items: center;
+        position: relative;
+    }
+    
+    .form-group .form-control {
+        background-color: #e6e6e6;
+        padding: 11px 20px 11px 65px;
+        color: #000000;
+        border-radius: 10px;
+        font-size: 17px;
+        font-family: 'arial';
+        border-top-right-radius: 10px !important;
+        border-bottom-right-radius: 10px !important;
+        transition: all .2s ease-in-out;
+        outline: none !important;
+        box-shadow: none;
+        border-color: #080202
+    }
+    
+    .container{
+        opacity: 20%;
+    }
+
+    .form-group i {
+        position: absolute;
+        left: 35px;
+        font-size: 20px;
+        color: #000000;
+        text-align: center;
+        transition: all .2s ease;
+    }
+    
+    .btn {
+        display: block;
+        padding: 9px;
+        margin-top: 35px;
+        background-color: #3ca4e0;
+        border-color: #000000;
+        text-transform: uppercase;
+        font-size: 17px;
+        outline: none !important;
+        color: #000000 !important;
+        border-radius: 5px;
+    }
+    
+    .forget {
+        display: flex;
+        justify-content: center;
+        margin: 20px;
+        color: #888;
+    }
+    
+    .forget a {
+        color: #555;
+    }
+    
+    .New-Account {
+        display: flex;
+        justify-content: center;
+        margin-top: 50px;
+    }
+    
+    .New-Account a {
+        color: #888;
+    }
+    
+    .btn:hover {
+        background-color: #222;
+    }
+    
+    .input-group:focus i {
+        position: absolute;
+    }
+    
+    a:hover {
+        color: #57b846
+    }
+ @media (max-width: 575.98px) {
+        .lgn {
+            width: 300px;
+            padding: 50px 15px;
+        }
+        .lgn .img {
+            margin-bottom: 70px;
+            display: none;
+        }
+        .login-form {
+            margin-left: 0;
+        }
+        .login-form h4 {
+            margin-bottom: 60px;
+        }
+        .forget {
+            margin: 15px 0;
+            color: #888;
+        }
+        .New-Account {
+            margin-top: 40px;
+        }
+    }
+    /*Small devices (landscape phones, 576px and up)*/
+    
+    @media (min-width: 576px) and (max-width: 1199.98px) {
+        .lgn {
+            width: 600px;
+            padding: 50px 30px;
+        }
+        .lgn .img {
+            margin-bottom: 50px;
+            padding: 0 50px;
+            display: block;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+        }
+        img {
+            width: 100%;
+        }
+        .login-form {
+            margin-left: 0;
+        }
+        .login-form h4 {
+            margin-bottom: 60px;
+        }
+        .forget {
+            margin: 15px 0;
+            color: #888;
+        }
+        .New-Account {
+            margin-top: 40px;
+        }
+    }

@@ -1,0 +1,67 @@
+<body class="vertical light">
+  <div class="wrapper">
+    {{>adminSidebar}}
+    <main role="main" class="main-content">
+      <div class="container-fluid">
+        <div class="row justify-content-center">
+          <div class="col-12">
+            {{>adminHeader}}
+            <div class="card shadow mb-4">
+              <div class="card-body">
+                <div class="row">
+                  <div class="col-md-12">
+                    <form action="/admin/edit-product/{{product._id}}" method="post" enctype="multipart/form-data">
+                      <div class="form-group mb-3">
+                        <label for="simpleinput">Name</label>
+                        <input type="text" name="name" class="form-control" value="{{product.name}}" />
+                      </div>
+                      <div class="form-group mb-3">
+                        <label for="simpleinput">Brand Name</label>
+                        <input type="text" name="brand" class="form-control" value="{{product.brand}}" />
+                      </div>
+                      <div class="form-group mb-3">
+                        <label for="custom-select">Category</label>
+                        <select class="custom-select" name="category" id="custom-select">
+                          <option value="{{product.category}}" selected>{{product.category}}</option>
+                          {{#each categories}}
+                          <option value="{{this.categoryName}}">{{this.categoryName}}</option>
+                          {{/each}}
+                        </select>
+                      </div>
+                      <div class="form-group mb-3">
+                        <label for="simpleinput">Price</label>
+                        <input type="number" name="price" class="form-control" value="{{product.price}}" />
+                      </div>
+                      <div class="form-group mb-3">
+                        <label for="simpleinput">Color</label>
+                        <input type="text" name="color" class="form-control" value="{{product.color}}" />
+                      </div>
+                      <div class="form-group mb-3">
+                        <label for="simpleinput">Stock</label>
+                        <input type="number" name="stock" class="form-control" value="{{product.stock}}" />
+                      </div>
+                      <div class="form-group mb-3">
+                        <label for="simpleinput">Description</label>
+                        <input type="text" name="description" class="form-control" value="{{product.description}}" />
+                      </div>
+
+                      <div class="form-group mb-3">
+                        <label for="customFile">Images</label>
+                        <img src="/product-images/{{product._id}}1.jpg" style="width:100px;height:auto" alt=""
+                          id="imgView">
+                        <div class="form-group mb-3">
+                          <input type="file" id="example-fileinput" name="images[]" class="form-control-file" multiple>
+                        </div>
+                      </div>
+                      <button type="submit" class="btn mb-2 btn-success">Submit</button>
+                    </form>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </main>
+  </div>
+</body>

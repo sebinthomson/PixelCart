@@ -1,0 +1,25 @@
+<aside id="colorlib-hero">
+    <div class="flexslider">
+        <ul class="slides">
+            {{#each banners}}
+            <li style="background-image: url(banner-images/{{this._id}}.jpg);">
+                {{!-- <div class="overlay"></div> --}}
+                <div class="container-fluid">
+                    <div class="row">
+                        <div class="col-sm-6 offset-sm-3 text-center slider-text">
+                            <div class="slider-text-inner">
+                                <div class="desc" >
+                                    <h1 class="head-1">{{this.titleOne}}</h1>
+                                    <h2 class="head-2">{{this.titleTwo}}</h2>
+                                    <h2 class="head-3">{{this.titleThree}}</h2>
+                                    <p class="category"><span>{{this.titleFour}}</span></p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </li>
+            {{/each}}
+        </ul>
+    </div>
+</aside>

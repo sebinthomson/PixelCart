@@ -1,0 +1,132 @@
+<html>
+
+<body>
+
+	<body>
+		<div class="colorlib-loader"></div>
+		<div id="page">
+			<nav class="colorlib-nav" role="navigation">
+				<div class="top-menu">
+					<div class="container">
+						<div class="row">
+							<div class="col-sm-7 col-md-9">
+								<div id="colorlib-logo"><a href="/login">PixelCart</a></div>
+							</div>
+							<div class="col-sm-5 col-md-3">
+								<div class="search-wrap">
+									<input id="searchInput" type="text" class="form-control search"
+										placeholder="Search">
+									<button id="searchButton" class="btn btn-primary submit-search text-center"
+										type="button"><i class="icon-search"></i></button>
+								</div>
+							</div>
+						</div>
+						<div class="row">
+							<div class="col-sm-12 text-left menu-1">
+								<ul>
+									<li class="active"><a href="/login">Home</a></li>
+									<li class="has-dropdown">
+										<a href="/login">Profile</a>
+										<ul class="dropdown">
+											<li><a href="/login">Profile Management</a></li>
+											<li><a href="/login">Order Management</a></li>
+										</ul>
+									</li>
+									<li class="cart"><a href="/login">Login</a></li>
+									<li class="cart"><a href="/login"><i class="icon-shopping-cart"></i> Cart</a></li>
+								</ul>
+							</div>
+						</div>
+					</div>
+				</div>
+			{{>userCoupon}}
+			</nav>
+			<aside id="colorlib-hero">
+				<div class="flexslider">
+					<ul class="slides">
+						{{#each banners}}
+						<li style="background-image: url(banner-images/{{this._id}}.jpg);">
+							{{!-- <div class="overlay"></div> --}}
+							<div class="container-fluid">
+								<div class="row">
+									<div class="col-sm-6 offset-sm-3 text-center slider-text">
+										<div class="slider-text-inner">
+											<div class="desc">
+												<h1 class="head-1">{{this.titleOne}}</h1>
+												<h2 class="head-2">{{this.titleTwo}}</h2>
+												<h2 class="head-3">{{this.titleThree}}</h2>
+												<p class="category"><span>{{this.titleFour}}</span></p>
+											</div>
+										</div>
+									</div>
+								</div>
+							</div>
+						</li>
+						{{/each}}
+					</ul>
+				</div>
+			</aside>
+			<div class="colorlib-intro">
+				<div class="container">
+					<div class="row">
+						<div class="col-sm-12 text-center">
+							<h2 class="intro">Save your Memories, Record your Actions,</h2>
+							<h2 class="intro">Survive with Surveillance</h2>
+						</div>
+					</div>
+				</div>
+			</div>
+			<div>
+				<div>
+					<div class="colorlib-product">
+						<div class="container">
+							<div class="row row-pb-md">
+								{{#each products}}
+								<div class="col-lg-4 mb-4 text-center">
+									<a href="/login">
+										<div class="product-entry border">
+											<figure> <img src="/product-images/{{this._id}}0.jpg" alt="product-image"
+													style="width: 210px; height: 250px;">
+											</figure>
+											<div class="desc">
+												<figcaption>{{this.name}}</figcaption>
+												<figcaption>{{formatPrice this.price}}</figcaption>
+											</div>
+										</div>
+									</a>
+								</div>
+								{{/each}}
+							</div>
+						</div>
+					</div>
+					<div class="col-lg-12">
+						<div style="display: flex; justify-content: center;">
+							<ul style="list-style: none; padding: 0; margin: 0; display: flex; align-items: center;">
+								{{#if (gt currentPage 1)}}
+								<li style="margin-right: 10px;"><a href="/?page={{sub currentPage 1}}"><button
+											class="btn mb-2 btn-secondary">Previous</button></a></li>
+								{{/if}}
+
+								{{#each pages}}
+								{{#if (eq this ../currentPage)}}
+								<li style="margin-right: 10px;" class="active"><a href="#"><button type="button"
+											class="btn mb-2 btn-primary">{{this}}</button></a></li>
+								{{else}}
+								<li style="margin-right: 10px;"><a href="/?page={{this}}"><button type="button"
+											class="btn mb-2 btn-secondary">{{this}}</button></a></li>
+								{{/if}}
+								{{/each}}
+
+								{{#if (lt currentPage totalPages)}}
+								<li style="margin-right: 10px;"><a href="/?page={{add currentPage 1}}"><button
+											class="btn mb-2 btn-secondary">Next</button></a></li>
+								{{/if}}
+							</ul>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</body>
+
+</html>

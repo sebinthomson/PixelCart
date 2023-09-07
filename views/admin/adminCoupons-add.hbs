@@ -1,0 +1,49 @@
+<body class="vertical light">
+  <div class="wrapper">
+    {{>adminSidebar}}
+    <main role="main" class="main-content">
+      <div class="container-fluid">
+        <div class="row justify-content-center">
+          <div class="col-12">
+            {{>adminHeader}}
+            <div class="card shadow mb-4">
+              <div class="card-body">
+                <div class="row">
+                  <div class="col-md-12">
+                    <form action="/admin/add-coupon" method="POST" enctype="multipart/form-data">
+                      <div class="form-group mb-3">
+                        <label for="simpleinput">Coupon Code</label>
+                        <input type="text" name="couponCode" id="simpleinput" class="form-control" required/>
+                      </div>
+                      <div class="form-group mb-3">
+                        <label for="simpleinput">Description</label>
+                        <input type="text" name="couponDescription" id="simpleinput" class="form-control" required/>
+                      </div>
+                      <div class="form-group mb-3">
+                        <label for="simpleinput">Discount</label>
+                        <input type="text" name="discount" id="simpleinput" class="form-control" required/>
+                      </div>
+                      <div class="form-group mb-3">
+                        <label for="simpleinput">Max Discount</label>
+                        <input type="text" name="maxDiscount" id="simpleinput" class="form-control" required/>
+                      </div>
+                      <div class="form-group mb-3">
+                        <label for="simpleinput">Min Amount</label>
+                        <input type="text" name="minAmount" id="simpleinput" class="form-control" required/>
+                      </div>
+                      <div class="form-group mb-3">
+                        <label for="simpleinput">Expiration Date</label>
+                        <input type="date" name="expirationDate" id="simpleinput" class="form-control" required/>
+                      </div>
+                      <button type="submit" class="btn mb-2 btn-success">Submit</button>
+                    </form>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </main>
+  </div>
+</body>

@@ -1,0 +1,63 @@
+<body class="vertical light">
+  <div class="wrapper">
+    {{>adminSidebar}}
+    <main role="main" class="main-content">
+      <div class="container-fluid">
+        <div class="row justify-content-center">
+          <div class="col-12">
+            {{>adminHeader}}
+            <div class="card shadow mb-4">
+              <div class="card-body">
+                <div class="row">
+                  <div class="col-md-12">
+                    <form action="/admin/add-product" method="POST" enctype="multipart/form-data">
+                      <div class="form-group mb-3">
+                        <label for="simpleinput">Name</label>
+                        <input type="text" name="name" id="simpleinput" class="form-control" value="{{product.name}}" required/>
+                      </div>
+                      <div class="form-group mb-3">
+                        <label for="simpleinput">Brand Name</label>
+                        <input type="text" name="brand" id="simpleinput" class="form-control"
+                          value="{{product.brand}}" required/>
+                      </div>
+                      <div class="form-group mb-3">
+                        <label for="custom-select">Category</label>
+                        <select class="custom-select" name="category" id="custom-select" required >
+                          <option value="" disabled selected>Select a category...</option>
+                          {{#each categories}}
+                          <option value="{{this.categoryName}}">{{this.categoryName}} </option>
+                          {{/each}}
+                        </select>
+                      </div>
+                      <div class="form-group mb-3">
+                        <label for="simpleinput">Price</label>
+                        <input type="text" name="price" id="simpleinput" class="form-control" required/>
+                      </div>
+                      <div class="form-group mb-3">
+                        <label for="simpleinput">Color</label>
+                        <input type="text" name="color" id="simpleinput" class="form-control" required/>
+                      </div>
+                      <div class="form-group mb-3">
+                        <label for="simpleinput">Stock</label>
+                        <input type="text" name="stock" id="simpleinput" class="form-control" required/>
+                      </div>
+                      <div class="form-group mb-3">
+                        <label for="simpleinput">Description</label>
+                        <input type="text" name="description" id="simpleinput" class="form-control" required/>
+                      </div>
+                      <div class="form-group mb-3">
+                        <label for="example-fileinput">Images</label>
+                        <input type="file" id="example-fileinput" name="images[]" class="form-control-file" multiple required>
+                      </div>
+                      <button type="submit" class="btn mb-2 btn-success">Submit</button>
+                    </form>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </main>
+  </div>
+</body>

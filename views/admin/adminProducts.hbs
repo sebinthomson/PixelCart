@@ -1,0 +1,81 @@
+<body class="vertical light">
+  <div class="wrapper">
+    {{>adminSidebar}}
+    <main role="main" class="main-content">
+      <div class="container-fluid">
+        <div class="row justify-content-center">
+          <div class="col-12">
+            {{>adminHeader}}
+            <a href="/admin/add-product"><button type="button" class="btn mb-2 btn-primary">Add Product</button></a>
+            <table class="table table-borderless table-striped">
+              <thead>
+                <tr role="row">
+                  <th>Product Name</th>
+                  <th>Brand</th>
+                  <th>Color</th>
+                  <th>Category</th>
+                  <th>Stock</th>
+                  <th>Price</th>
+                  <th>Image</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody>
+                {{#each products}}
+                <tr>
+                  <th scope="col">{{this.name}}</th>
+                  <th >{{this.brand}}</th>
+                  <th >{{this.color}}</th>
+                  <td>{{this.category}}</td>
+                  <td>{{this.stock}}</td>
+                  <td>{{this.price}}</td>
+                  <td><img style="width:50px;height:50px" src="/product-images/{{this._id}}0.jpg"></td>
+                  </td>
+                  <td>
+                    <a href="/admin/admineditproduct?productId={{this._id}}"><button type="button"
+                        class="btn mb-2 btn-primary">Edit</button></a>
+                    {{#if this.isDeleted}}
+                    <a href='/admin/adminrecoverproduct?productId={{this._id}}'><button type="button"
+                        class="btn mb-2 btn-success">Recover</button></a>
+                    {{else}}
+                    <a href='/admin/admindeleteproduct?productId={{this._id}}'><button type="button"
+                        class="btn mb-2 btn-danger">Delete</button></a>
+                    {{/if}}
+                  </td>
+                </tr>
+                {{/each}}
+              </tbody>
+            </table>
+          </div>
+          <div>
+            <div class="col-lg-12">
+              <div class="pagination" style="display: flex; justify-content: center;">
+                <ul style="list-style: none; padding: 0; margin: 0; display: flex; align-items: center;">
+                  {{#if (gt currentPage 1)}}
+                  <li style="margin-right: 10px;"><a href="/admin?page={{sub currentPage 1}}"><button
+                        class="btn mb-2 btn-primary">Previous</button></a></li>
+                  {{/if}}
+
+                  {{#each pages}}
+                  {{#if (eq this ../currentPage)}}
+                  <li style="margin-right: 10px;" class="active"><a href="#"><button type="button"
+                        class="btn mb-2 btn-secondary" style="background-color: rgb(62, 64, 64);">{{this}}</button></a></li>
+                  {{else}}
+                  <li style="margin-right: 10px;"><a href="/admin?page={{this}}"><button type="button"
+                        class="btn mb-2 btn-secondary">{{this}}</button></a></li>
+                  {{/if}}
+                  {{/each}}
+
+                  {{#if (lt currentPage totalPages)}}
+                  <li style="margin-right: 10px;"><a href="/admin?page={{add currentPage 1}}"><button
+                        class="btn mb-2 btn-primary">Next</button></a></li>
+                  {{/if}}
+                </ul>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </main>
+  </div>
+</body>

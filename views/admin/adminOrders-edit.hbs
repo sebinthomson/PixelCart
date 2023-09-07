@@ -1,0 +1,50 @@
+<body class="vertical light">
+  <div class="wrapper">
+    {{>adminSidebar}}
+    <main role="main" class="main-content">
+      <div class="container-fluid">
+        <div class="row justify-content-center">
+          <div class="col-12">
+            {{>adminHeader}}
+            <div class="card shadow mb-4">
+              <div class="card-body">
+                <div class="row">
+                  <div class="col-md-12">
+                    <form action="/admin/edit-order/{{order._id}}" method="POST" enctype="multipart/form-data">
+                      <div class="form-group mb-3">
+                        <label for="example-readonly">User Name</label>
+                        <input type="text" id="example-readonly" class="form-control" readonly="{{order.userName}}"
+                          value="{{order.userName}}">
+                      </div>
+                      <div class="form-group mb-3">
+                        <label for="example-readonly">Order Date & Time</label>
+                        <input type="text" id="example-readonly" class="form-control" readonly="{{order.orderDate}}"
+                          value="{{order.orderDate}}">
+                      </div>
+                      <div class="form-group mb-3">
+                        <label for="custom-select">Status - Edit here</label>
+                        <select class="custom-select" id="custom-select" name="status">
+                          <option selected>{{order.status}}</option>
+                          <option value="Pending Approval">Pending Approval</option>
+                          <option value="Order Placed">Order Placed</option>
+                          <option value="Shipped/Dispatched">Shipped/Dispatched</option>
+                          <option value="Out for Delivery">Out for Delivery</option>
+                          <option value="Delivered">Delivered</option>
+                          <option value="Cancelled">Cancelled</option>
+                          <option value="Refunded">Refunded</option>
+                          <option value="Returned">Returned</option>
+                          <option value="Completed">Completed</option>
+                        </select>
+                      </div>
+                      <button type="submit" class="btn btn-success mt-4">Submit</button>
+                    </form>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </main>
+  </div>
+</body>

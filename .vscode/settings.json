@@ -1,0 +1,6 @@
+{
+    "diffEditor.wordWrap": "off",
+    "editor.renderWhitespace": "all",
+    "editor.wordWrapColumn": 180,
+    "editor.wordWrap": "bounded"
+}

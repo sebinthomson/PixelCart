@@ -1,0 +1,40 @@
+<nav class="colorlib-nav" role="navigation">
+    <div class="top-menu">
+        <div class="container">
+            <div class="row">
+                <div class="col-sm-7 col-md-9">
+                    <div id="colorlib-logo"><a href="/">PixelCart</a></div>
+                </div>
+                <div class="col-sm-5 col-md-3">
+                    <div class="search-wrap">
+                        <input id="searchInput" type="text" class="form-control search" placeholder="Search">
+                        <button id="searchButton" class="btn btn-primary submit-search text-center" type="button"><i
+                                class="icon-search"></i></button>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-sm-12 text-left menu-1">
+                    <ul>
+                        <li class="active"><a href="/">Home</a></li>
+                        <li class="has-dropdown">
+                            <a href="/profile">Profile</a>
+                            <ul class="dropdown">
+                                <li><a href="/profile">Profile Management</a></li>
+                                <li><a href="/profile-orders">Order Management</a></li>
+                            </ul>
+                        </li>
+                        <li class="cart"><a href="/logout">Logout</a></li>
+                        <li class="cart"><a href="/cart"><i class="icon-shopping-cart"></i> Cart</a></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+    {{#if coupons}}
+    {{>userCoupon}}
+    {{/if}}
+</nav>
+{{#if banners}}
+{{>userBanner}}
+{{/if}}

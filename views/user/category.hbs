@@ -1,0 +1,47 @@
+<!DOCTYPE HTML>
+<html>
+
+<body>
+	<div class="colorlib-loader"></div>
+	<div id="page">
+		{{>userHeader}}
+		<div class="colorlib-intro">
+			<div class="container">
+				<div class="row">
+					<div class="col-sm-12 text-center">
+						<h2 class="intro">Save your Memories, Record your Actions,</h2>
+						<h2 class="intro">Survive with Surveillance</h2>
+					</div>
+				</div>
+			</div>
+		</div>
+		<div class="colorlib-product">
+			<div class="container">
+				<div class="row row-pb-md">
+					{{#each categoryProducts}}
+					<div class="col-lg-3 mb-4 text-center">
+						<a href="/productdetails?proId={{this._id}}">
+							<div class="product-entry border">
+								<figure> <img src="/product-images/{{this._id}}0.jpg" alt="product-image"
+										style="width: 210px; height: 250px;">
+								</figure>
+								<div class="desc">
+									<figcaption>{{this.name}}</figcaption>
+									<figcaption>₹{{this.price}}</figcaption>
+									</figure>
+								</div>
+							</div>
+						</a>
+					</div>
+					{{/each}}
+				</div>
+				<div class="row">
+					<div class="col-md-12 text-center">
+						<p><a href="#" class="btn btn-primary btn-lg">Shop All Products</a></p>
+					</div>
+				</div>
+			</div>
+		</div>
+</body>
+
+</html>

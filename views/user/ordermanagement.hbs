@@ -1,0 +1,167 @@
+<html>
+
+<body>
+  <div class="colorlib-loader"></div>
+  <div id="page">
+    {{>userHeader}}
+    <div class="breadcrumbs">
+      <div class="container">
+        <div class="row">
+          <div class="col">
+            <p class="bread"><span><a href="/">Home</a></span>
+              /
+              <span>Profile</span>
+              /
+              <span>Order Management</span>
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="container">
+      <div class="row">
+        <div class="row row-pb-lg">
+          {{#each orders}}
+          <div style="margin-bottom: 2rem;">
+            <div class="col-md-12">
+              <div class="product-name d-flex"
+                style="background-color: #88c8bc; border-bottom-left-radius: 0 ;border-bottom-right-radius: 0;height: 2rem;">
+                <div class="one-forth" >
+                  <h5 style="line-height: 12px; padding-left: 2rem; font-size: medium;">Order Id:{{this._id}}</h5>
+                </div>
+                <div class="one-forth" style="display: flex; flex-direction: row-reverse">
+                  <a style="line-height: 15px; padding-right: 2rem; color:black" href="/invoice?id={{this._id}}"><i class="icon-download"></i><strong>Invoice Download</strong></a>
+                </div>
+              </div>
+
+              <div class="product-name d-flex" style="border-radius: 0;">
+                <div class="one-eight text-center">
+                  <span>Image</span>
+                </div>
+                <div class="one-forth text-left px-4">
+                  <span>Product Details</span>
+                </div>
+                <div class="one-eight text-center">
+                  <span>Price</span>
+                </div>
+                <div class="one-eight text-center">
+                  <span>Quantity</span>
+                </div>
+                <div class="one-eight text-center">
+                  <span>Total</span>
+                </div>
+              </div>
+              {{#each this.products}}
+              <div class="product-cart d-flex">
+                <div class="one-eight text-center">
+                  <div class="display-tc">
+                    <div class="product-img" style="background-image: url('/product-images/{{this.item}}0.jpg');"></div>
+                  </div>
+                </div>
+                <div class="one-forth">
+                  <div class="display-tc">
+                    <h3>{{this.name}}</h3>
+                  </div>
+                </div>
+                <div class="one-eight text-center">
+                  <div class="display-tc">
+                    <span class="price">{{this.price}}</span>
+                  </div>
+                </div>
+                <div class="one-eight text-center">
+                  <div class="display-tc">
+                    <span class="price">{{this.quantity}}</span>
+                  </div>
+                </div>
+                <div class="one-eight text-center">
+                  <div class="display-tc">
+                    <span class="price">{{multiply this.quantity this.price}}</span>
+                  </div>
+                </div>
+              </div>
+              {{/each}}
+            </div>
+            <div class="col-md-12 text-center"
+              style="display: flex; justify-content: space-evenly; border-bottom: 1px solid; border-radius: 30px">
+              <a href="/requestcancellation?orderId={{this._id}}">
+                <p><button type="submit" href="#" class="btn btn-primary"
+                    style=" color:black; background-color: #88c8bc;">Request
+                    Cancellation</button></p>
+              </a>
+              {{#if (eq this.status 'Delivered')}}
+              <a href="/requestcancellation?orderId={{this._id}}">
+                <p><button type="submit" href="#" class="btn btn-primary"
+                    style=" color:black; background-color: #88c8bc;">Request
+                    Return</button></p>
+              </a>
+              {{/if }}
+              <p><button type="submit" href="#" class="btn btn-primary details-button"
+                  style=" color:black; background-color: #88c8bc;" order-id="{{this._id}}"
+                  order-orderDate="{{formatDate this.orderDate}}"
+                  order-address="{{this.orderAddress.billingAddressName}}, {{this.orderAddress.address}}, {{this.orderAddress.zipPostalCode}}, {{this.orderAddress.townCity}}, {{this.orderAddress.country}}"
+                  order-contact="{{this.orderAddress.number}}, {{this.orderAddress.email}}"
+                  order-status="{{this.status}}" order-paymentMode="{{this.paymentMode}}"
+                  order-total="{{this.subTotal}}">Order Details</button></p>
+            </div>
+          </div>
+          {{/each}}
+        </div>
+      </div>
+      <div class="col-lg-12">
+        <div style="display: flex; justify-content: center;">
+          <ul style="list-style: none; padding: 0; margin: 0; display: flex; align-items: center;">
+            {{#if (gt currentPage 1)}}
+            <li style="margin-right: 10px;"><a href="/profile-orders?page={{sub currentPage 1}}"><button
+                  class="btn mb-2 btn-secondary">Previous</button></a></li>
+            {{/if}}
+
+            {{#each pages}}
+            {{#if (eq this ../currentPage)}}
+            <li style="margin-right: 10px;" class="active"><a href="#"><button type="button"
+                  class="btn mb-2 btn-primary">{{this}}</button></a></li>
+            {{else}}
+            <li style="margin-right: 10px;"><a href="/profile-orders?page={{this}}"><button type="button"
+                  class="btn mb-2 btn-secondary">{{this}}</button></a></li>
+            {{/if}}
+            {{/each}}
+
+            {{#if (lt currentPage totalPages)}}
+            <li style="margin-right: 10px;"><a href="/profile-orders?page={{add currentPage 1}}"><button
+                  class="btn mb-2 btn-secondary">Next</button></a></li>
+            {{/if}}
+          </ul>
+        </div>
+      </div>
+    </div>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script>
+      const detailsButtons = document.querySelectorAll('.details-button');
+
+      detailsButtons.forEach(button => {
+        button.addEventListener('click', async () => {
+          const orderDate = button.getAttribute('order-orderDate');
+          const orderAddress = button.getAttribute('order-address');
+          const orderContact = button.getAttribute('order-contact');
+          const orderStatus = button.getAttribute('order-status');
+          const orderPaymentMode = button.getAttribute('order-paymentMode');
+          const orderTotal = button.getAttribute('order-total');
+
+          Swal.fire({
+            title: 'Order Details',
+            html: `
+          <strong>Order Date:</strong> ${orderDate} <br> 
+          <strong>Shipping Address:</strong> ${orderAddress} <br> 
+          <strong>Order Contact Information:</strong> ${orderContact} <br>
+          <strong>Order Status:</strong> ${orderStatus} <br>
+          <strong>Order Payment Type:</strong> ${orderPaymentMode} <br>
+          <strong>Order Total:</strong> ${orderTotal} <br> `,
+            confirmButtonText: 'OK',
+            confirmButtonColor: '#88c8bc',
+            width: '70rem',
+          });
+        });
+      });
+    </script>
+</body>
+
+</html>

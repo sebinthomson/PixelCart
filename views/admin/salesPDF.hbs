@@ -1,0 +1,81 @@
+<style>
+  .table {
+    border-collapse: collapse;
+    width: 100%;
+  }
+
+  .table th,
+  .table td {
+    padding: 8px;
+    border: 1px solid black;
+  }
+
+  .table th {
+    background-color: #f2f2f2;
+    font-weight: bold;
+    text-align: center;
+  }
+
+  .table td {
+    text-align: center;
+  }
+</style>
+
+<body class="vertical light">
+  <div class="wrapper">
+    {{>adminSidebar}}
+    <main role="main" class="main-content">
+      <div class="container-fluid">
+        <div class="row justify-content-center">
+          <div class="col-12">
+            {{>adminHeader}}
+            {{#if orders.length}}
+            <table class="table" id="productsTable">
+              <thead style="border-bottom: 2px solid #333;">
+                <tr>
+                  <th scope="col"><strong>Sl no</strong></th>
+                  <th scope="col"><strong>Order ID</strong></th>
+                  <th scope="col"><strong>Date</strong></th>
+                  <th scope="col"><strong>User Name</strong></th>
+                  <th scope="col"><strong>Bill Address</strong></th>
+                  <th scope="col"><strong>Payment</strong></th>
+                  <th scope="col"><strong>Status</strong></th>
+                  <th scope="col"><strong>Amount</strong></th>
+                </tr>
+              </thead>
+              <tbody>
+
+                {{#each orders as |order index|}}
+                {{!-- Calculate the totalAmount --}}
+
+                <tr>
+                  <td>{{incrementIndex index}}</td>
+                  <td>{{order._id}}</td>
+                  <td>{{formatDate order.deliveredDate}}</td>
+                  <td>{{order.userName}}</td>
+                  <td>{{order.orderAddress.billingAddressName}},{{order.orderAddress.number}},<br>{{order.orderAddress.address}},{{order.orderAddress.townCity}},<br>PostalCode : {{order.orderAddress.zipPostalCode}},{{order.orderAddress.country}}</td>
+                  <td>{{order.paymentMode}}</td>
+                  <td>{{order.status}}</td>
+                  {{!-- <td>{{order.totalQuantity}}</td> --}}
+                  <td>{{formatPrice order.subTotal}}</td>
+                </tr>
+                {{/each}}
+                <tr>
+                  <td colspan="5"><strong>Total Amount:</strong></td>
+                  <td colspan="3"><Strong>{{formatPrice totalAmount}}</Strong></td>
+                </tr>
+                {{!-- {{else}}
+                <tr>
+                  <td colspan="6">No orders found.</td>
+                </tr> --}}
+
+                {{else}}
+                <p>No orders found.</p>
+                {{/if}}
+              </tbody>
+            </table>
+          </div>
+        </div>
+    </main>
+  </div>
+</body>

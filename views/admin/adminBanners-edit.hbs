@@ -1,0 +1,47 @@
+<body class="vertical light">
+  <div class="wrapper">
+    {{>adminSidebar}}
+    <main role="main" class="main-content">
+      <div class="container-fluid">
+        <div class="row justify-content-center">
+          <div class="col-12">
+            {{>adminHeader}}
+            <div class="card shadow mb-4">
+              <div class="card-body">
+                <div class="row">
+                  <div class="col-md-12">
+                    <form action="/admin/edit-banner/{{banner._id}}" method="post" enctype="multipart/form-data">
+                      <div class="form-group mb-3">
+                        <label for="simpleinput">titleOne</label>
+                        <input type="text" name="titleOne" class="form-control" value="{{banner.titleOne}}" />
+                      </div>
+                      <div class="form-group mb-3">
+                        <label for="simpleinput">titleTwo</label>
+                        <input type="text" name="titleTwo" class="form-control" value="{{banner.titleTwo}}" />
+                      </div>
+                      <div class="form-group mb-3">
+                        <label for="simpleinput">titleThree</label>
+                        <input type="text" name="titleThree" class="form-control" value="{{banner.titleThree}}" />
+                      </div>
+                      <div class="form-group mb-3">
+                        <label for="simpleinput">titleFour</label>
+                        <input type="text" name="titleFour" class="form-control" value="{{banner.titleFour}}" />
+                      </div>
+                      <div class="form-group mb-3">
+                        <label for="example-fileinput">Images</label>
+                        <img src="/banner-images/{{banner._id}}.jpg" style="width:100px;height:auto" alt=""
+                          id="imgView">
+                        <input type="file" id="example-fileinput" name="bannerImage" class="form-control-file" required>
+                      </div>
+                      <button type="submit" class="btn mb-2 btn-success">Submit</button>
+                    </form>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </main>
+  </div>
+</body>

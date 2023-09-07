@@ -1,0 +1,22 @@
+/* 
+.pagination {
+    display: flex;
+    justify-content: center;
+  }
+  
+  .pagination-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+  }
+  
+  .pagination-list li {
+    margin-right: 10px;
+  }
+  
+
+  .pagination-list li.active a {
+    font-weight: bold;
+    color: #000;
+  } */

@@ -1,0 +1,19 @@
+<div class="sale">
+    <div class="container">
+        <div class="row">
+            <div class="col-sm-8 offset-sm-2 text-center">
+                <div class="row">
+                    <div class="owl-carousel2">
+                        {{#each coupons}}
+                        <div class="item" style="width: 100%;">
+                            <div class="col">
+                                <h3 style="color: white;">{{this.couponDisplay}}: {{this.couponCode}}</a></h3>
+                            </div>
+                        </div>
+                        {{/each}}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

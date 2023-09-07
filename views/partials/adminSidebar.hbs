@@ -1,0 +1,125 @@
+<aside class="sidebar-left border-right bg-white shadow" id="leftSidebar" data-simplebar>
+  <a href="#" class="btn collapseSidebar toggle-btn d-lg-none text-muted ml-2 mt-3" data-toggle="toggle">
+    <i class="fe fe-x"><span class="sr-only"></span></i>
+  </a>
+  <nav class="vertnav navbar navbar-light">
+    <!-- nav bar -->
+    <div class="w-100 mb-4 d-flex">
+      <span class="navbar-brand mx-auto mt-2 flex-fill text-center">Admin Panel</span>
+    </div>
+    <ul class="navbar-nav flex-fill w-100 mb-2">
+      <li class="nav-item w-100">
+        <a class="nav-link" href="/admin/admin-dashboard">
+          <i class="fe fe-calendar fe-16"></i>
+          <span class="ml-3 item-text">Analytics</span>
+        </a>
+      </li>
+      <li class="nav-item w-100">
+        <a class="nav-link" href="/admin/allUsers">
+          <i class="fe fe-calendar fe-16"></i>
+          <span class="ml-3 item-text">Users</span>
+        </a>
+      </li>
+      <li class="nav-item w-100">
+        <a class="nav-link" href="/admin/products">
+          <i class="fe fe-calendar fe-16"></i>
+          <span class="ml-3 item-text">Products</span>
+        </a>
+      </li>
+      <li class="nav-item w-100">
+        <a class="nav-link" href="/admin/admin-categories">
+          <i class="fe fe-calendar fe-16"></i>
+          <span class="ml-3 item-text">Categories</span>
+        </a>
+      </li>
+      <li class="nav-item w-100">
+        <a class="nav-link" href="/admin/admin-orders">
+          <i class="fe fe-calendar fe-16"></i>
+          <span class="ml-3 item-text">Orders</span>
+        </a>
+      </li>
+      <li class="nav-item w-100">
+        <a class="nav-link" href="/admin/admin-coupons">
+          <i class="fe fe-calendar fe-16"></i>
+          <span class="ml-3 item-text">Coupons</span>
+        </a>
+      </li>
+      <li class="nav-item w-100">
+        <a class="nav-link" href="/admin/admin-banners">
+          <i class="fe fe-calendar fe-16"></i>
+          <span class="ml-3 item-text">Banners</span>
+        </a>
+      </li>
+      <li>
+        <div class="nav-item dropdown">
+          <ul class="nav">
+            <li class="nav-item menu-items">
+              <a class="nav-link" data-toggle="collapse" href="#salesReport" aria-expanded="false"
+                aria-controls="salesReport">
+                <span class="menu-icon">
+                  {{!-- <i class="mdi mdi-playlist-play"></i> --}}
+                </span>
+                <span class="menu-title">Sales Report</span>
+                <i class="menu-arrow"></i>
+              </a>
+              <div class="collapse" id="salesReport">
+                <ul class="nav flex-column sub-menu">
+                  <li class="nav-item">
+                    <a class="nav-link" href="/admin/todaySaleExcel">Today's Sale</a>
+                  </li>
+                  <li class="nav-item">
+                    <a class="nav-link" href="/admin/todayRevenueExcel">Total Revenue</a>
+                  </li>
+                  <li class="nav-item">
+                    <a class="nav-link" href="/admin/allProductExcel">All Product</a>
+                  </li>
+                  <li class="nav-item">
+                    <a class="nav-link" href="/admin/allOrderStatusExcel">All Orders</a>
+                  </li>
+                  <li class="nav-item">
+                    <a class="nav-link" href="/admin/orderDetailPDF">Order View</a>
+                  </li>
+                  <li class="nav-item mt-4">
+                    <div style="display: flex; align-items: center">
+                      <div>
+                        <span class="nothing">Date<br>Range<br>Picker</span>
+                      </div>
+                      <div>
+                        <input type="date" id="start" class="form-control drgpicker" name="start" required>
+                        <input type="date" id="end" class="form-control drgpicker" name="end" required>
+                      </div>
+                      <div>
+                        <button id="customDateLink" class="Btn" style="border: none;">
+                          <span class="circle circle-sm bg-secondary">
+                            <i class="fe fe-16 fe-download text-white mb-0"></i>
+                          </span>
+                        </button>
+                      </div>
+                    </div>
+                  </li>
+                </ul>
+              </div>
+            </li>
+          </ul>
+        </div>
+      </li>
+    </ul>
+  </nav>
+</aside>
+<script>
+  const customDateLink = document.getElementById('customDateLink');
+  const startDateInput = document.getElementById('start');
+  const endDateInput = document.getElementById('end');
+
+  customDateLink.addEventListener('click', (event) => {
+    event.preventDefault(); // Prevent the default link behavior
+
+    const startDate = startDateInput.value;
+    const endDate = endDateInput.value;
+
+    setTimeout(() => {
+      const url = `/admin/customDate?start=${encodeURIComponent(startDate)}&end=${encodeURIComponent(endDate)}`;
+      window.open(url, '_blank');
+    }, 500);
+  });
+</script>

@@ -1,0 +1,39 @@
+<link rel="stylesheet" type="text/css" href="/css/toastify.css">
+
+<body class="vertical light">
+  <div class="wrapper">
+    {{>adminSidebar}}
+    <main role="main" class="main-content">
+      <div class="container-fluid">
+        <div class="row justify-content-center">
+          <div class="col-12">
+            {{>adminHeader}}
+            <div class="card shadow mb-4">
+              <div class="card-body">
+                <div class="row">
+                  <div class="col-md-12">
+                    <form id="categoryForm" action="/admin/add-banner" method="POST" enctype="multipart/form-data">
+                      <div class="form-group mb-3">
+                        <label for="simpleinput">Title One</label>
+                        <input type="text" name="titleOne" id="titleOne" class="form-control" required />
+                        <label for="simpleinput">Title Two</label>
+                        <input type="text" name="titleTwo" id="titleTwo" class="form-control" required />
+                        <label for="simpleinput">Title Three</label>
+                        <input type="text" name="titleThree" id="titleThree" class="form-control" required />
+                        <label for="simpleinput">Title Four</label>
+                        <input type="text" name="titleFour" id="titleFour" class="form-control" required />
+                        <label for="example-fileinput">Images</label>
+                        <input type="file" id="example-fileinput" name="bannerImage" class="form-control-file" required>
+                      </div>
+                      <button type="submit" class="btn mb-2 btn-success">Submit</button>
+                    </form>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </main>
+  </div>
+</body>

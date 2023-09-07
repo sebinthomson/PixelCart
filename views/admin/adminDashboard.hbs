@@ -1,0 +1,296 @@
+<body class="vertical light">
+  <div class="wrapper">
+    {{>adminSidebar}}
+    <main role="main" class="main-content">
+      <div class="container-fluid">
+        <div class="row justify-content-center">
+          <div class="col-12">
+            {{>adminHeader}}
+            <div class="row">
+              <div class="col-md-6 col-xl-3 mb-4">
+                <div class="card shadow border-0">
+                  <div class="card-body">
+                    <div class="row align-items-center">
+                      <div class="col-3 text-center">
+                        <span class="circle circle-sm bg-primary">
+                          <i class="fe fe-16 fe-dollar-sign text-white mb-0"></i>
+                        </span>
+                      </div>
+                      <div class="col pr-0">
+                        <p class=" mb-0">Revenue</p>
+                        <span class="h3 mb-0">{{ formatPrice orders.totalPriceSum}}</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="col-md-6 col-xl-3 mb-4">
+                <div class="card shadow border-0">
+                  <div class="card-body">
+                    <div class="row align-items-center">
+                      <div class="col-3 text-center">
+                        <span class="circle circle-sm bg-primary">
+                          <i class="fe fe-16 fe-truck text-white mb-0"></i>
+                        </span>
+                      </div>
+                      <div class="col pr-0">
+                        <p class=" mb-0">Orders</p>
+                        <span class="h3 mb-0">{{orders.count}}</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="col-md-6 col-xl-3 mb-4">
+                <div class="card shadow border-0">
+                  <div class="card-body">
+                    <div class="row align-items-center">
+                      <div class="col-3 text-center">
+                        <span class="circle circle-sm bg-primary">
+                          <i class="fe fe-16 fe-camera text-white mb-0"></i>
+                        </span>
+                      </div>
+                      <div class="col pr-0">
+                        <p class=" mb-0">Products</p>
+                        <span class="h3 mb-0">{{productsCount}} <span class="small text-muted"> in {{categoryCount}}
+                            categories</span></span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="col-md-6 col-xl-3 mb-4">
+                <div class="card shadow border-0">
+                  <div class="card-body">
+                    <div class="row align-items-center">
+                      <div class="col-3 text-center">
+                        <span class="circle circle-sm bg-primary">
+                          <i class="fe fe-16 fe-dollar-sign text-white mb-0"></i>
+                        </span>
+                      </div>
+                      <div class="col pr-0" style="display: grid;">
+                        <p class=" mb-0">Online Earning<span class="small text-muted"> ({{onlineOrders.count}})</span>
+                        </p>
+                        <span class="h3 mb-0">{{formatPrice onlineOrders.totalPriceSum}} </span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="row">
+              <div class="col-xl-8 col-lg-12">
+                <div class="card mb-4">
+                  <article class="card-body">
+                    <h5 class="card-title">Sales</h5>
+                    <canvas id="salesChart" height="120px"></canvas>
+                  </article>
+                </div>
+              </div>
+              <div class="col-xl-4 col-lg-12">
+                <div class="card mb-4">
+                  <article class="card-body" style="min-height: 19rem;">
+                    <h5 class="card-title">Orders Based on date</h5>
+                    <canvas id="salesCount" height="217"></canvas>
+                  </article>
+                </div>
+              </div>
+            </div>
+            <div class="row">
+              <div class="col-xl-6 col-lg-8">
+                <div class="card mb-4">
+                  <article class="card-body">
+                    <h5 class="card-title">Category Sales</h5>
+                    <canvas id="myPieChart" height="100px"></canvas>
+                  </article>
+                </div>
+              </div>
+              <div class="col-xl-6 col-lg-12">
+                <div class="card mb-4">
+                  <article class="card-body">
+                    <h5 class="card-title">Revenue Based on Payment Methods</h5>
+                    <canvas id="barChart" height="217"></canvas>
+                  </article>
+                </div>
+              </div>
+            </div>
+            <div class="row">
+              <div class="col-md-12">
+                <h6 class="mb-3">Last orders(5)</h6>
+                <table class="table table-borderless table-striped">
+                  <thead>
+                    <tr role="row">
+                      <th><strong>ID</strong></th>
+                      <th><strong>Name</strong></th>
+                      <th><strong>Total</strong></th>
+                      <th><strong>Status</strong></th>
+                      <th><strong>Order Date</strong></th>
+                      <th><strong>Delivered Date</strong></th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {{#each order}}
+                    <tr>
+                      <td>{{this._id}}</td>
+                      <td><b>{{this.userName}}</b></td>
+                      <td>{{formatPrice this.subTotal}}</td>
+                      <td>
+                        {{#if (equalto this.status 'Order Placed')}}
+                        <div class="badge rounded-pill alert-primary">{{this.status}}</div>
+                        {{else if (equalto this.status 'Shipped/Dispatched')}}
+                        <div class="badge rounded-pill alert-info">{{this.status}}</div>
+                        {{else if (equalto this.status 'Cancelled')}}
+                        <div class="badge rounded-pill alert-warning">{{this.status}}</div>
+                        {{else if (equalto this.status 'Delivered')}}
+                        <div class="badge rounded-pill alert-success">{{this.status}}</div>
+                        {{else if (equalto this.status 'Pending Approval')}}
+                        <div class="badge rounded-pill alert-warning">{{this.status}}</div>
+                        {{else}}
+                        <div class="badge rounded-pill alert-danger">{{this.status}}</div>
+                        {{/if}}
+                      </td>
+
+                      <td>{{formatDate this.orderDate}}</td>
+                      <td>{{formatDate this.deliveredDate}}</td>
+                    </tr>
+                    {{/each}}
+                  </tbody>
+                </table>
+              </div> <!-- / .col-md-3 -->
+            </div> <!-- end section -->
+          </div>
+        </div> <!-- .row -->
+      </div>
+    </main>
+  </div>
+  <script>
+    const datas = JSON.parse('{{{jsonStringify categorySales}}}');
+    const labels = datas.map(item => item.categoryName);
+    const prices = datas.map(item => item.priceSum);
+    const getRandomColor = () => '#' + Math.floor(Math.random() * 16777215).toString(16);
+    const contexts = document.getElementById('myPieChart').getContext('2d');
+    const myPieChart = new Chart(contexts, {
+      type: 'pie',
+      data: {
+        labels: labels,
+        datasets: [{
+          data: prices,
+          backgroundColor: datas.map(item => getRandomColor()),
+          borderColor: 'white',
+          borderWidth: 1
+        }]
+      },
+      options: {
+        title: {
+          display: true,
+          text: 'Pie Chart'
+        }
+      }
+    });
+  </script>
+  
+  <script>
+    const salesData = JSON.parse('{{{jsonStringify salesData}}}');
+    
+    const dates = salesData.map(item => item._id);
+    const dailySales = salesData.map(item => item.dailySales);
+
+    const ctx = document.getElementById('salesChart').getContext('2d');
+    new Chart(ctx, {
+      type: 'line',
+      data: {
+        labels: dates,
+        datasets: [{
+          label: 'Daily Sales',
+          data: dailySales,
+          backgroundColor: '#1b68ff',
+          borderColor: '#1b68ff',
+          borderWidth: 1
+        }]
+      },
+      options: {
+        responsive: true,
+        scales: {
+          y: {
+            beginAtZero: true
+          }
+        }
+      }
+    });
+  </script>
+  
+  <script>
+    const salesCount = JSON.parse('{{{jsonStringify salesCount}}}');
+
+    const date = salesCount.map(item => item._id);
+    const orderCounts = salesCount.map(item => item.orderCount);
+
+    const ctxs = document.getElementById('salesCount').getContext('2d');
+    new Chart(ctxs, {
+      type: 'bar',
+      data: {
+        labels: date,
+        datasets: [{
+          label: 'Orders per Date',
+          data: orderCounts,
+          backgroundColor: '#1b68ff',
+          borderColor: 'rgba(75, 192, 192, 1)',
+          borderWidth: 1
+        }]
+      },
+      options: {
+        responsive: true,
+        scales: {
+          y: {
+            beginAtZero: true
+          },
+          x: {
+          }
+        }
+      }
+    });
+
+  </script>
+
+  <script>
+    // Sample data for three values
+    const onlinePay = JSON.parse('{{{jsonStringify onlineOrders}}}');
+    const codPay = JSON.parse('{{{jsonStringify codOrders}}}');
+    const data = {
+      labels: ['COD', 'RAZORPAY'],
+      datasets: [{
+        label: 'Comparison',
+        data: [codPay.totalPriceSum, onlinePay.totalPriceSum],
+        backgroundColor: [
+          '#CECE5A', // Value 1 color
+          '#FFE17B', // Value 2 color
+          'rgba(75, 192, 192, 0.7)', // Value 3 color
+        ],
+        borderColor: [
+          'rgba(255, 99, 132, 1)',
+          'rgba(54, 162, 235, 1)',
+          'rgba(75, 192, 192, 1)',
+        ],
+        borderWidth: 1
+      }]
+    };
+
+    // Get the canvas element
+    const context = document.getElementById('barChart').getContext('2d');
+
+    // Create the bar chart
+    new Chart(context, {
+      type: 'bar',
+      data: data,
+      options: {
+        scales: {
+          y: {
+            beginAtZero: true
+          }
+        }
+      }
+    });
+
+
+  </script>
+</body>

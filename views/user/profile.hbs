@@ -1,0 +1,155 @@
+<html>
+
+<body>
+  <div class="colorlib-loader"></div>
+  <div id="page">
+    {{>userHeader}}
+    <div class="breadcrumbs">
+      <div class="container">
+        <div class="row">
+          <div class="col">
+            <p class="bread"><span><a href="/">Home</a></span>
+              /
+              <span>Profile</span>
+              /
+              <span>Profile Management</span>
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="container">
+      <div class="row">
+        <div class="col-lg-12">
+          <form action="/edit-user" method="POST" enctype="multipart/form-data" class="colorlib-form" style="border: 1px solid;">
+            <h2>User Profile Details</h2>
+            <div class="row">
+              <div class="col-md-12">
+                <div class="form-group">
+                  <label for="fname">Name</label>
+                  <input type="text" name="name" id="fname" class="form-control" placeholder="{{this.userDetails.name}}"
+                    value="{{this.userDetails.name}}" />
+                </div>
+              </div>
+              <div class="col-md-6">
+                <div class="form-group">
+                  <label for="fname">Email</label>
+                  <input type="text" name="email" id="fname" class="form-control" placeholder="{{this.userDetails.email}}"
+                    value="{{this.userDetails.email}}" />
+                </div>
+              </div>
+              <div class="col-md-6">
+                <div class="form-group">
+                  <label for="fname">Mobile</label>
+                  <input type="text" name="mobile" id="fname" class="form-control" placeholder="{{this.userDetails.mobile}}"
+                    value="{{this.userDetails.mobile}}" />
+                </div>
+              </div>
+              <div class="col-md-12">
+                <div class="form-group">
+                  <div class="radio">
+                    <div class="col-md-12 text-center">
+                      <p><button type="submit" href="#" class="btn btn-primary">Edit Profile Details</button></p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </form>
+        </div>
+        <div class="breadcrumbs">
+          <div class="container">
+            <div class="row">
+              <div class="col">
+                <p class="bread"><span>Profile</span>
+                  /
+                  <span>Profile Management</span>
+                  /
+                  <span>Edit saved address here</span>
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="col-lg-12">
+          <h2>Saved Addresses</h2>
+          {{#each addresses}}
+          <form action="/edit-address?addressId={{this._id}}" method="POST" enctype="multipart/form-data"
+            class="colorlib-form" style="border: 1px solid;">
+            <div class="row">
+              <div class="col-md-6">
+                <div class="form-group">
+                  <label for="fname">Name</label>
+                  <input type="text" name="billingAddressName" id="fname" class="form-control"
+                    placeholder="{{this.name}}" value="{{this.name}}" />
+                </div>
+              </div>
+              <div class="col-md-6">
+                <div class="form-group">
+                  <label for="email">E-mail Address</label>
+                  <input type="email" id="email" name="email" class="form-control" placeholder="{{this.email}}"
+                    value="{{this.email}}" />
+                </div>
+              </div>
+              <div class="col-md-3">
+                <div class="form-group">
+                  <label for="country">Select Country</label>
+                  <div class="form-field">
+                    <select name="country" id="people" class="form-control">
+                      <option value="{{this.country}}" selected>{{this.country}}</option>
+                      <option value="India">India</option>
+                      <option value="China">China</option>
+                      <option value="Pakistan">Pakistan</option>
+                      <option value="Bhutan">Bhutan</option>
+                    </select>
+                  </div>
+                </div>
+              </div>
+              <div class="col-md-3">
+                <div class="form-group">
+                  <label for="companyname">Town/City</label>
+                  <input type="text" name="townCity" id="towncity" class="form-control" placeholder="{{this.townCity}}"
+                    value="{{this.townCity}}" />
+                </div>
+              </div>
+              <div class="col-md-3">
+                <div class="form-group">
+                  <label for="lname">Zip/Postal Code</label>
+                  <input type="text" name="zipPostalCode" id="zippostalcode" class="form-control"
+                    placeholder="{{this.zipPostalCode}}" value="{{this.zipPostalCode}}" />
+                </div>
+              </div>
+              <div class="col-md-3">
+                <div class="form-group">
+                  <label for="Phone">Phone Number</label>
+                  <input type="text" name="number" id="zippostalcode" class="form-control" placeholder="{{this.number}}"
+                    value="{{this.number}}" />
+                </div>
+              </div>
+
+              <div class="col-md-12">
+                <div class="form-group">
+                  <label for="fname">Address</label>
+                  <input type="text" name="address" id="address" class="form-control" placeholder="{{this.address}}"
+                    value="{{this.address}}" />
+                </div>
+              </div>
+              <div class="col-md-12">
+                <div class="form-group">
+                  <div class="col-md-12 text-center" style="display: flex; justify-content: space-evenly;">
+                    <p><button type="submit" href="#" class="btn btn-primary">Edit this address</button></p>
+                    <a href="/deleteaddress?addressId={{this._id}}">
+                      <p class="btn btn-primary">Delete this address</p>
+                    </a>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </form>
+          {{/each}}
+        </div>
+      </div>
+    </div>
+</body>
+
+</html>
