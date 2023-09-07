@@ -224,7 +224,6 @@ const logout = async (req, res) => {
 
 const home = async (req, res) => {
   try {
-    console.log(req.session)
     const colors = await productHelpers.getAllColors();
     const brands = await productHelpers.getAllBrands();
     const categories = await categoryHelpers.getAllCategories();
