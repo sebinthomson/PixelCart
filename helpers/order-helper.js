@@ -1,8 +1,11 @@
 const mongoose = require("mongoose");
 const connectDB = require("../config/connection");
 const Order = require("../models/order");
+const Product = require("../models/product");
 const Cart = require("../models/cart");
 const Wallet = require("../models/wallet");
+const userHelper = require("../helpers/user-helpers");
+const walletHelper = require("../helpers/wallet-helpers")
 const Razorpay = require("razorpay");
 const { log } = require("console");
 var instance = new Razorpay({
@@ -21,20 +24,16 @@ const placeOrder = async (userName, userId, address, products, total, paymentMod
       email: address.email,
       number: address.number,
     }
+    let status = 'Order Failed';
     const orderProducts = products.map((products) => {
       return {
         item: products.product._id,
         name: products.product.name,
         quantity: products.quantity,
         price: products.product.price,
+        productStatus: status
       };
     });
-    let status;
-    if(paymentMode === 'COD'){
-      status = 'Pending Approval'
-    } else if (paymentMode === 'ONLINE') {
-      status = 'Order Placed'
-    }
     let orderObj = {
       user: userId,
       userName: userName,
@@ -44,36 +43,97 @@ const placeOrder = async (userName, userId, address, products, total, paymentMod
       paymentMode: paymentMode,
       status: status
     }
-
     connectDB()
     .then(async () =>{
-      let createdOrder = await Order.create(orderObj)
+      await Order.create(orderObj)
       .then(async (response) => {
-        let cartId = response._id
-        await Cart.deleteOne({user: userId})
-        resolve(cartId)
-      }).then(async (response) => {
-        const Products = await Order
-          .findOne({_id: createdOrder._id})
-          .populate("products.item")
-
-        Products.products.map(async (item) => {
-          let stock = item.item.stock - item.quantity
-
-          await Products.findByIdAndUpdate(
-            item.item._id,
-            {
-              stock: stock
-            },
-            { new: true }
-          )
-        })
-      }).catch((error) => {
-        console.log(error);
-        reject(error)
+        let orderId = response._id
+        resolve(orderId)
       })
     })
   })
+};
+
+const clearCartAndStock = async (userId, orderId) => {
+  try {
+    await connectDB();
+    await Cart.deleteOne({ user: userId });
+    const order = await Order.findOne({ _id: orderId }).populate(
+      "products.item"
+      );
+      order.products.map(async (item) => {
+        let stock = item.item.stock - item.quantity;
+        
+        await Product.findByIdAndUpdate(
+          item.item._id,
+          {
+            stock: stock,
+        },
+        { new: true }
+        );
+      });
+    } catch (error) {
+      console.log(error);
+    }
+  };
+  
+const changeOrderStatus = async (orderId) => {
+  try {
+    await connectDB()
+    const order = await Order.findById(orderId)
+    let status;
+    if(order.paymentMode == 'COD'){
+      status = 'Pending Approval'
+    } else {
+      status = 'Order Placed'
+    }
+    return await Order.findByIdAndUpdate(orderId,{$set: { 'products.$[].productStatus': status },status: status},{new: true})
+  } catch (error) {
+    console.log(error);
+  }
+}
+
+const updateProductStatus = async (orderId, productId, productStatus) => {
+  try {
+    await connectDB();
+    console.log(orderId,productId,productStatus,'updateproductstatushelper')
+    if(productStatus === "Cancelled" || productStatus ==="Returned") {
+      let order = await Order.find({_id: orderId},{products: 1,user: 1})
+      const userId = order[0].user.toString()
+      const user = await userHelper.findUser(userId)
+      order = order[0].products
+      for (const orderItem of order) {
+        if (orderItem._id.toString() === productId) {
+          var refund = orderItem.refund;
+          var balance = orderItem.price;
+        }
+      }
+      if (!refund) {
+        walletHelper.upsertWallet(userId, user[0].name, balance)
+      }
+      await Order.updateOne(
+        { _id: orderId, "products._id": productId },
+        { $set: { "products.$.refund": true, request: false } })
+    }
+    await Order.updateOne(
+      { _id: orderId, "products._id": productId },
+      { $set: { "products.$.productStatus": productStatus } }
+    );
+  } catch (error) {
+    console.log(error);
+  }
+};
+
+const userUpdateProductStatus = async (orderId, productId, productStatus) => {
+  try {
+    await connectDB();
+    await Order.updateOne(
+      { _id: orderId, "products.item": productId },
+      { $set: { "products.$.productStatus": productStatus, request: true } }
+    );
+  } catch (error) {
+    console.log(error);
+  }
 };
 
 const getAllOrders = async () => {
@@ -126,17 +186,12 @@ const getOrderById = async (_id)=> {
 const updateOrder = async (orderId, orderStatus) => {
   try {
     await connectDB()
-    if(orderStatus.status === "Cancelled") {
-      let orderDetails = await Order.findOne({ _id: orderId }, { _id: 0, subTotal: 1, user: 1 });
-      let userId = orderDetails.user
-      let balance = orderDetails.subTotal
-      await Wallet.updateOne({user: userId}, {balance: balance}, { upsert: true })
-    }
     if(orderStatus.status === "Delivered"){
       orderStatus.deliveredDate = Date.now()
+      return await Order.findByIdAndUpdate(orderId, {$set: { 'products.$[].productStatus': orderStatus.status },status: orderStatus.status, deliveredDate: orderStatus.deliveredDate}, { new: true })
+    }else {
+      return await Order.findByIdAndUpdate(orderId, {$set: { 'products.$[].productStatus': orderStatus.status },status: orderStatus.status}, { new: true })
     }
-    console.log(orderStatus,"orderStatus")
-    return await Order.findByIdAndUpdate(orderId, orderStatus, { new: true })
   } catch (error) {
     console.log(error);
   }
@@ -540,6 +595,10 @@ const findOrderByDate = (startDate, endDate) => {
 
 module.exports = {
   placeOrder,
+  clearCartAndStock,
+  changeOrderStatus,
+  updateProductStatus,
+  userUpdateProductStatus,
   getAllOrders,
   getUser,
   getOrderById,

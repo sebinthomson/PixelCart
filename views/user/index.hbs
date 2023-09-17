@@ -59,8 +59,8 @@
 					</div>
 				</div>
 				<div class="col-lg-12">
-					<div style="display: flex; justify-content: center;">
-						<ul style="list-style: none; padding: 0; margin: 0; display: flex; align-items: center;">
+					<div class="paginationhome" style="display: flex; justify-content: center;">
+						<ul class="unlist" style="list-style: none; padding: 0; margin: 0; display: flex; align-items: center;">
 							{{#if (gt currentPage 1)}}
 							<li style="margin-right: 10px;"><a href="/home?page={{sub currentPage 1}}"><button
 										class="btn mb-2 btn-secondary">Previous</button></a></li>
@@ -95,13 +95,13 @@
 			const productColor = new Set();
 			const productRange = new Set();
 			const productCategory = new Set();
-			let sort
+			let sort;
 			let search
+			let page
 			let pb = []
 			let pc = []
 			let pr = []
 			let pcategory = []
-
 			function brandAddOrRemoveValue(value) {
 				if (productBrand.has(value)) {
 					productBrand.delete(value);
@@ -109,7 +109,6 @@
 					productBrand.add(value);
 				}
 			}
-
 			function colorAddOrRemoveValue(value) {
 				if (productColor.has(value)) {
 					productColor.delete(value);
@@ -117,7 +116,6 @@
 					productColor.add(value);
 				}
 			}
-
 			function rangeAddOrRemoveValue(value) {
 				if (productRange.has(value)) {
 					productRange.delete(value);
@@ -125,7 +123,6 @@
 					productRange.add(value);
 				}
 			}
-
 			function categoryAddOrRemoveValue(value) {
 				if (productCategory.has(value)) {
 					productCategory.delete(value);
@@ -133,7 +130,6 @@
 					productCategory.add(value);
 				}
 			}
-
 			const categoryButtons = document.querySelectorAll('.category-control-input');
 			const brandButtons = document.querySelectorAll('.brand-control-input');
 			const colorButtons = document.querySelectorAll('.color-control-input');
@@ -142,11 +138,9 @@
 			const searchInput = document.getElementById("searchInput");
 			const searchButton = document.getElementById("searchButton");
 			search = searchInput.value;
-
-
-
+			const paginationButtons = document.querySelectorAll('.pagination-button');
 			const productsContainer = document.querySelector('.colorlib-product .container .row.row-pb-md');
-
+			const paginationContainer = document.querySelector('.paginationhome .unlist');
 			categoryButtons.forEach(button => {
 				button.addEventListener('change', async () => {
 					const category = button.getAttribute('data-category');
@@ -160,7 +154,8 @@
 							productRange: pr,
 							productCategory: pcategory,
 							sort: sort,
-							search: search
+							search: search,
+							page: page
 						},
 						method: 'post',
 						success: (response) => {
@@ -175,13 +170,13 @@
 									}
 								});
 							} else {
-								updateProducts(response);
+								updateProducts(response.products);
+								updatePagination(response.currentPage, response.totalPages, response.pages)
 							}
 						}
 					})
 				});
 			});
-
 			brandButtons.forEach(button => {
 				button.addEventListener('change', async () => {
 					const brand = button.getAttribute('data-brand');
@@ -195,7 +190,8 @@
 							productRange: pr,
 							productCategory: pcategory,
 							sort: sort,
-							search: search
+							search: search,
+							page: page
 						},
 						method: 'post',
 						success: (response) => {
@@ -210,13 +206,13 @@
 									}
 								});
 							} else {
-								updateProducts(response);
+								updateProducts(response.products);
+								updatePagination(response.currentPage, response.totalPages, response.pages)
 							}
 						}
 					})
 				});
 			});
-
 			colorButtons.forEach(button => {
 				button.addEventListener('change', async () => {
 					const color = button.getAttribute('data-color');
@@ -230,7 +226,8 @@
 							productRange: pr,
 							productCategory: pcategory,
 							sort: sort,
-							search: search
+							search: search,
+							page: page
 						},
 						method: 'post',
 						success: (response) => {
@@ -245,17 +242,16 @@
 									}
 								});
 							} else {
-								updateProducts(response);
+								updateProducts(response.products);
+								updatePagination(response.currentPage, response.totalPages, response.pages)
 							}
 						}
 					})
 				});
 			});
-
 			priceButtons.forEach(button => {
 				button.addEventListener('change', async () => {
 					let price = button.getAttribute('data-range');
-
 					rangeAddOrRemoveValue(price)
 					pr = [...productRange]
 					$.ajax({
@@ -266,7 +262,8 @@
 							productRange: pr,
 							productCategory: pcategory,
 							sort: sort,
-							search: search
+							search: search,
+							page: page
 						},
 						method: 'post',
 						success: (response) => {
@@ -281,19 +278,19 @@
 									}
 								});
 							} else {
-								updateProducts(response);
+								updateProducts(response.products);
+								updatePagination(response.currentPage, response.totalPages, response.pages)
 							}
 						}
 					})
 				});
 			});
-
-
 			selectElement.addEventListener('change', function () {
 				const selectedIndex = this.selectedIndex;
 				const selectedOption = this.options[selectedIndex];
 				const sortValue = selectedOption.getAttribute('data-sort');
-
+				sort = sortValue
+				console.log(sort)
 				$.ajax({
 					url: '/filterProduct',
 					data: {
@@ -301,8 +298,9 @@
 						productColor: pc,
 						productRange: pr,
 						productCategory: pcategory,
-						sort: sortValue,
-						search: search
+						sort: sort,
+						search: search,
+						page: page
 					},
 					method: 'post',
 					success: (response) => {
@@ -313,15 +311,14 @@
 								confirmButtonColor: '#88c8bc',
 							});
 						} else {
-							updateProducts(response);
+							updateProducts(response.products);
+							updatePagination(response.currentPage, response.totalPages, response.pages)
 						}
 					}
 				})
 			});
-
 			searchButton.addEventListener("click", function () {
 				search = searchInput.value;
-				console.log(search, 'searched word')
 				$.ajax({
 					url: '/filterProduct',
 					data: {
@@ -330,7 +327,8 @@
 						productRange: pr,
 						productCategory: pcategory,
 						sort: sort,
-						search: search
+						search: search,
+						page: page
 					},
 					method: 'post',
 					success: (response) => {
@@ -345,12 +343,47 @@
 								}
 							});
 						} else {
-							updateProducts(response);
+							updateProducts(response.products);
+							updatePagination(response.currentPage, response.totalPages, response.pages)
 						}
 					}
 				})
 			})
-
+			paginationContainer.addEventListener('click', (event) => {
+				const target = event.target;
+				if (target.classList.contains('pagination-button')) {
+					page = target.getAttribute('data-page');
+					$.ajax({
+						url: '/filterProduct',
+						data: {
+							productBrand: pb,
+							productColor: pc,
+							productRange: pr,
+							productCategory: pcategory,
+							sort: sort,
+							search: search,
+							page: page
+						},
+						method: 'post',
+						success: (response) => {
+							if (response.noProducts) {
+								Swal.fire({
+									title: 'No Matching Products',
+									confirmButtonText: 'OK',
+									confirmButtonColor: '#88c8bc',
+								}).then((result) => {
+									if (result.isConfirmed) {
+										window.location.href = '/home'
+									}
+								});
+							} else {
+								updateProducts(response.products);
+								updatePagination(response.currentPage, response.totalPages, response.pages)
+							}
+						}
+					})
+				}
+			});
 			function updateProducts(products) {
 				productsContainer.innerHTML = ''; // Clear existing products
 				products.forEach(product => {
@@ -371,6 +404,48 @@
 				`;
 					productsContainer.insertAdjacentHTML('beforeend', productHtml);
 				});
+			}
+			function updatePagination(currentPage, totalPages, pages) {
+				paginationContainer.innerHTML = '';
+				let paginationHtml=''
+				if (currentPage > 1) {
+					paginationHtml += `
+						<li style="margin-right: 10px;">
+							<a>
+								<button data-page="${currentPage - 1}" class="btn mb-2 btn-secondary pagination-button" id="paginationButton">Previous</button>
+							</a>
+						</li>
+					`;
+				}
+				pages.forEach(page => {
+					if (page === currentPage) {
+						paginationHtml += `
+							<li style="margin-right: 10px;" class="active">
+								<a href="#">
+									<button type="button" data-page="${page}" class="btn mb-2 btn-primary pagination-button">${page}</button>
+								</a>
+							</li>
+						`;
+					} else {
+						paginationHtml += `
+							<li style="margin-right: 10px;">
+								<a >
+									<button type="button" data-page="${page}" class="btn mb-2 btn-secondary pagination-button" id="paginationButton">${page}</button>
+								</a>
+							</li>
+						`;
+					}
+				});
+				if (currentPage < totalPages) {
+					paginationHtml += `
+						<li style="margin-right: 10px;">
+							<a>
+								<button data-page="${currentPage + 1}" class="btn mb-2 btn-secondary pagination-button" id="paginationButton">Next</button>
+							</a>
+						</li>
+					`;
+				}
+				paginationContainer.insertAdjacentHTML('beforeend', paginationHtml);
 			}
 		});
 	</script>

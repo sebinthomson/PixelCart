@@ -51,6 +51,15 @@ const orderSchema = new mongoose.Schema({
         type: Number,
         required: true,
       },
+      productStatus: {
+        type: String,
+        required: true,
+        default: 'Order Failed'
+      },
+      refund: {
+        type: Boolean,
+        default: false
+      }
     },
   ],
   orderDate: {
@@ -79,6 +88,10 @@ const orderSchema = new mongoose.Schema({
     type: String,
     required: true,
   },
+  request: {
+    type: Boolean,
+    default: false
+  }
 });
 
 module.exports = mongoose.model("Order", orderSchema);

@@ -52,6 +52,11 @@ module.exports = {
   incrementIndex: function(index) {
     return index + 1;
   },
+  or: function () {
+    const args = Array.from(arguments);
+    args.pop();
+    return args.some(Boolean);
+  },
 
 
 

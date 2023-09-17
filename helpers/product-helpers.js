@@ -41,7 +41,7 @@ module.exports = {
   getAllProducts: async () => {
     try {
       await connectDB();
-      return await Product.find({ isDeleted: false }).sort({ date: -1 });
+      return await Product.find({ isDeleted: false, stock: { $gt: 0 } }).sort({ date: -1 });
     } catch (err) {
       console.log(err);
     }
@@ -50,7 +50,7 @@ module.exports = {
   getFilterBrand: async (filter,sort) => {
     return new Promise((resolve, reject) => {
       connectDB().then(() => {
-        Product.find(filter).sort(sort).limit(6)
+        Product.find(filter).sort(sort)
           .then((products) => {
             resolve(products);
           })

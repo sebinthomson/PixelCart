@@ -76,7 +76,7 @@
 							</div>
 							<div class="one-eight text-center">
 								<div class="display-tc">
-									<span class="price">{{this.product.price}}</span>
+									<span class="price">{{formatPrice this.product.price}}</span>
 								</div>
 							</div>
 							<div class="one-eight text-center">
@@ -119,38 +119,36 @@
 						<div class="total-wrap">
 							<div class="row">
 								<div class="col-sm-8">
-									
-										<div class="row form-group" style="display: grid;">
-											<div class="col-sm-9">
-												<input type="text" id="couponCodeInput" name="quantity" class="form-control input-number"
-													placeholder="Your Coupon Number...">
-											</div>
-											<div style="display: flex;">
-												<div class="col-sm-3">
-													<input onclick="applyCoupon()" value="Apply Coupon" class="btn btn-primary">
-												</div>
-												<div class="col-sm-3">
-													<a onclick="showCoupons()" style="color: #fff; margin-left: 2rem;" class="btn btn-primary">Show Available Coupon</a>
-												</div>
-											</div>
-											<br>
+									<div class="row form-group" style="display: grid;">
+										<div class="col-sm-9">
+											<input type="text" id="couponCodeInput" name="quantity" class="form-control input-number"
+												placeholder="Your Coupon Number...">
+										</div>
+										<div style="display: flex;">
 											<div class="col-sm-3">
-												<button onclick='proceedToCheckout()' class="btn btn-primary">Proceed to
-													Checkout</button>
+												<button value="Apply Coupons" onclick="applyCancelCoupon()" class="btn btn-primary" id="couponButton">Apply Coupon</button>
+												{{!-- <input  value="Apply Coupon"  class="btn btn-primary"> --}}
+											</div>
+											<div class="col-sm-3">
+												<a onclick="showCoupons()" style="color: #fff; margin-left: 2rem;" class="btn btn-primary">Show Available Coupon</a>
 											</div>
 										</div>
-									
+										<br>
+										<div class="col-sm-3">
+											<button onclick='proceedToCheckout()' class="btn btn-primary">Proceed to
+												Checkout</button>
+										</div>
+									</div>
 								</div>
 								<div class="col-sm-4 text-center">
 									<div class="total">
 										<div class="sub">
-											<p><span>Subtotal:</span> <span id="subtotal">{{this.total}}</span></p>
-											<p><span>Delivery:</span> <span>0.00</span></p>
-											<p><span>Discount:</span> <span id="discount"></span></p>
+											<p><span>Subtotal:</span> <span id="subtotal">{{formatPrice this.total}}</span></p>
+											<p><span>Discount:</span> <span id="discount">₹0</span></p>
 										</div>
 										<div class="grand-total">
 											<p><span><strong>Total:</strong></span><span
-													id="grandtotal">{{this.total}}</span></p>
+													id="grandtotal">{{formatPrice this.total}}</span></p>
 										</div>
 									</div>
 								</div>
@@ -163,6 +161,7 @@
 	<!-- Ajax -->
 	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.4/jquery.min.js"></script>
 	<script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
+	<!-- toastify -->
 	<script type="text/javascript" src="https://cdn.jsdelivr.net/npm/toastify-js"></script>
 
 	<script>
@@ -177,7 +176,8 @@
 
 	{{#each products}}
 	<script>
-		document.getElementById('{{this.product._id}}prototal').innerHTML = {{ this.product.price }}* {{ this.quantity }};
+		var proTotal = {{this.product.price}} * {{this.quantity}}
+		document.getElementById('{{this.product._id}}prototal').innerHTML = "₹" + Number(proTotal).toLocaleString("en-IN", { maximumFractionDigits: 2 });
 	</script>
 	{{/each}}
 
@@ -187,11 +187,9 @@
 		.then(response => response.json())
 		.then(data => {
 		let couponsHtml = '';
-
 		data.coupons.forEach((coupon, index) => {
 			couponsHtml += `<strong> ${index + 1}:</strong> ${coupon.couponCode}: ${coupon.couponDescription}<br>`;
 		});
-
 		Swal.fire({
 			title: 'Available Coupons',
 			html: couponsHtml,
@@ -204,9 +202,7 @@
 		console.log('Error fetching coupons:', error);
 		});
 	}
-
 	</script>
-
 	<script>
 		function changeQuantity(tPrice, price, cartId, proId, count) {
 			const changeQElement = document.getElementById(proId + "quantity");
@@ -228,7 +224,7 @@
 						Swal.fire({
 							title: 'Product Removed From Cart',
 							timer: 1000
-						});
+						})
 						setTimeout(() => {
 							location.reload();
 						}, 1000);
@@ -236,7 +232,7 @@
 					else {
 						let QElement = document.getElementById(proId + "quantity");
 						let qchange = QElement.innerHTML;
-						document.getElementById(proId + 'prototal').innerHTML = price * qchange
+						document.getElementById(proId + 'prototal').innerHTML = "₹" + Number(price * qchange).toLocaleString("en-IN", { maximumFractionDigits: 2 })
 
 						let currentTotalSpan = document.getElementById('subtotal');
 						const subtotalValue = currentTotalSpan.innerHTML;
@@ -244,66 +240,142 @@
 						const currentTotal = parseFloat(currentprice);
 						changePrice = parseInt(tPrice)
 						const newSubtotalValue = currentTotal + changePrice
-
-						document.getElementById('subtotal').innerHTML = newSubtotalValue;
-						document.getElementById('grandtotal').innerHTML = newSubtotalValue;
-												
+						document.getElementById('subtotal').innerHTML = "₹" + Number(newSubtotalValue).toLocaleString("en-IN", { maximumFractionDigits: 2 });
+						const couponCodeInput = document.getElementById('couponCodeInput');
+						const couponCode = couponCodeInput.value;
+						const couponButton = document.getElementById('couponButton');
+						if (couponButton.innerHTML == 'Cancel Coupon' && couponCode) {
+							fetch('/getCoupons') // Assuming this is the correct endpoint
+							.then(response => response.json())
+							.then(data => {
+								data.coupons.forEach((coupon) => {
+									if (coupon.couponCode == couponCode && newSubtotalValue < coupon.minAmount) {
+										Toastify({
+											text: "Coupon Removed(Didn't Match Coupon Criteria)",
+											duration: 3000,
+											newWindow: true,
+											close: true,
+											gravity: "bottom", // `top` or `bottom`
+											position: "center", // `left`, `center` or `right`
+											stopOnFocus: true, // Prevents dismissing of toast on hover
+											style: {
+												background: "#cc0000",
+											},
+										}).showToast();
+										document.getElementById('discount').innerHTML = "₹0";
+										document.getElementById('grandtotal').innerHTML = "₹" + Number(newSubtotalValue).toLocaleString("en-IN", { maximumFractionDigits: 2 });
+										couponButton.innerHTML = 'Apply Coupon'
+									} else if (coupon.couponCode == couponCode && newSubtotalValue >= coupon.minAmount){
+										const discountSpan = document.getElementById('discount');
+										let discount = discountSpan.innerHTML;
+										discount = discount.replace(/[^0-9.]/g, '')
+										document.getElementById('grandtotal').innerHTML = "₹" + Number(newSubtotalValue-discount).toLocaleString("en-IN", { maximumFractionDigits: 2 });
+									}
+								});
+							})
+							.catch(error => {
+								console.log('Error fetching coupon data:', error);
+							});
+						}else {
+							document.getElementById('grandtotal').innerHTML = "₹" + Number(newSubtotalValue).toLocaleString("en-IN", { maximumFractionDigits: 2 });
+						}
 					}
 				}
 			});
 		}
 	</script>
 	<script>
-		function applyCoupon() {
+		function applyCancelCoupon() {
 			const couponCodeInput = document.getElementById('couponCodeInput');
-			const couponCode = couponCodeInput.value; 
-			$.ajax({
-				url: '/applyCoupon',
-				data: {
-					couponCode: couponCode
-				},
-				method: 'post',
-				success: (response) => {
-					if (response.noMinAmount) {
-						Toastify({
-							text: "Add products worth minimum amount of the coupon",
-							duration: 3000,
-							newWindow: true,
-							close: true,
-							gravity: "bottom", // `top` or `bottom`
-							position: "center", // `left`, `center` or `right`
-							stopOnFocus: true, // Prevents dismissing of toast on hover
-							style: {
-							background: "#88c8bc",
-							},
-						}).showToast();
+			const couponCode = couponCodeInput.value;
+			const couponButton = document.getElementById('couponButton');
+			if (couponButton.innerHTML == 'Apply Coupon' && couponCode) {
+				$.ajax({
+					url: '/applyCoupon',
+					data: {
+						couponCode: couponCode
+					},
+					method: 'post',
+					success: (response) => {
+						if (response.noMinAmount) {
+							Toastify({
+								text: "Add products worth minimum amount of the coupon",
+								duration: 3000,
+								newWindow: true,
+								close: true,
+								gravity: "bottom", // `top` or `bottom`
+								position: "center", // `left`, `center` or `right`
+								stopOnFocus: true, // Prevents dismissing of toast on hover
+								style: {
+									background: "#88c8bc",
+								},
+							}).showToast();
+						}
+						else {
+							couponButton.innerHTML = 'Cancel Coupon';
+							document.getElementById('discount').innerHTML = "₹" + Number(response.obj.discount).toLocaleString("en-IN", { maximumFractionDigits: 2 });
+							document.getElementById('grandtotal').innerHTML = "₹" + Number(response.obj.grandTotal).toLocaleString("en-IN", { maximumFractionDigits: 2 });
+							Toastify({
+								text: "Coupon Applied successfully",
+								duration: 3000,
+								newWindow: true,
+								close: true,
+								gravity: "bottom", // `top` or `bottom`
+								position: "center", // `left`, `center` or `right`
+								stopOnFocus: true, // Prevents dismissing of toast on hover
+								style: {
+									background: "#88c8bc",
+								},
+							}).showToast();
+						}
 					}
-					else {
-						document.getElementById('discount').innerHTML = response.obj.discount;
-						document.getElementById('grandtotal').innerHTML = response.obj.grandTotal;
-
-						Toastify({
-							text: "Coupon applied successfully",
-							duration: 3000,
-							newWindow: true,
-							close: true,
-							gravity: "bottom", // `top` or `bottom`
-							position: "center", // `left`, `center` or `right`
-							stopOnFocus: true, // Prevents dismissing of toast on hover
-							style: {
-							background: "#88c8bc",
-							},
-						}).showToast();
-					}
-				}
-			});
+				});
+			} else if(couponButton.innerHTML == 'Cancel Coupon') {
+				couponButton.innerHTML = 'Apply Coupon';
+				document.getElementById('discount').innerHTML = "₹0";
+				let currentTotalSpan = document.getElementById('subtotal');
+				currentTotalSpan = currentTotalSpan.innerHTML;
+				currentTotalSpan = parseInt(currentTotalSpan.replace(/[^\d.]/g, ''));
+				document.getElementById('grandtotal').innerHTML = "₹" + Number(currentTotalSpan).toLocaleString("en-IN", { maximumFractionDigits: 2 });
+				Toastify({
+					text: "Coupon Cancelled successfully",
+					duration: 3000,
+					newWindow: true,
+					close: true,
+					gravity: "bottom", // `top` or `bottom`
+					position: "center", // `left`, `center` or `right`
+					stopOnFocus: true, // Prevents dismissing of toast on hover
+					style: {
+						background: "#cc0000",
+					},
+				}).showToast();
+			}
 		}
 	</script>
 	<script>
 		function proceedToCheckout() {
-			const discountSpan = document.getElementById('discount'); 
-        	const discount = discountSpan.innerHTML;
-			window.location.href=`/proceedToCheckout?discount=${discount}`
+			const discountSpan = document.getElementById('discount');
+			let discount = discountSpan.innerHTML;
+			discount = discount.replace(/[^0-9.]/g, '')
+			const SubtotalSpan = document.getElementById('subtotal');
+			let subtotal = SubtotalSpan.innerHTML;
+			subtotal = subtotal.replace(/[^0-9.]/g, '')
+			if (subtotal === '0') {
+				Toastify({
+					text: "Add and item to checkout",
+					duration: 3000,
+					newWindow: true,
+					close: true,
+					gravity: "bottom", // `top` or `bottom`
+					position: "center", // `left`, `center` or `right`
+					stopOnFocus: true, // Prevents dismissing of toast on hover
+					style: {
+						background: "#88c8bc",
+					},
+				}).showToast();
+			} else {
+				window.location.href = `/proceedToCheckout?discount=${discount}`
+			}
 		}
 	</script>
 

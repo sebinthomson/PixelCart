@@ -1,32 +1,79 @@
 <link rel="stylesheet" type="text/css" href="css/enterOTP.css">
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.1/dist/css/bootstrap.min.css" integrity="sha384-zCbKRCUGaJDkqS1kPbPd7TveP5iyJE0EjAuZQTgFLD2ylzuqKfdKlfG/eSrtxUkn" crossorigin="anonymous">
-    <script src="https://cdn.jsdelivr.net/npm/jquery@3.5.1/dist/jquery.slim.min.js" integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj" crossorigin="anonymous"></script>
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.1/dist/js/bootstrap.bundle.min.js" integrity="sha384-fQybjgWLrvvRgtW6bFlB7jaZrFsaBXjsOMm/tB9LTS58ONXgqbR9W8oWht/amnpF" crossorigin="anonymous"></script>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.1/dist/css/bootstrap.min.css"
+  integrity="sha384-zCbKRCUGaJDkqS1kPbPd7TveP5iyJE0EjAuZQTgFLD2ylzuqKfdKlfG/eSrtxUkn" crossorigin="anonymous">
+<script src="https://cdn.jsdelivr.net/npm/jquery@3.5.1/dist/jquery.slim.min.js"
+  integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj" crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.1/dist/js/bootstrap.bundle.min.js"
+  integrity="sha384-fQybjgWLrvvRgtW6bFlB7jaZrFsaBXjsOMm/tB9LTS58ONXgqbR9W8oWht/amnpF" crossorigin="anonymous"></script>
+
 <body>
-    <div class="card login-box">
-      {{#if newUser}}
-        <form action="/verifys" method="post">
-            <h3 class="bg text-light rounded">OTP Verification</h3>
-            <br>
-             <input type="text" id="mobileNumber" name="mobileNumber" class="form-control" value={{this.mobileNumber}} required>
-            <br>
-            <input type="text" id="otp" name="otp" class="form-control" placeholder="Enter the OTP received" required>
-            <br>
-            <br>
-            <button class="btn-block submit-btn" type="submit">Submit</button>
-        </form>
-      {{/if}}
-      {{#if forgotUser}}
-        <form action="/forgotPasswordverifys" method="post">
-            <h3 class="bg text-light rounded">OTP Verification</h3>
-            <br>
-             <input type="text" id="mobileNumber" name="mobileNumber" class="form-control" value={{this.mobileNumber}} required>
-            <br>
-            <input type="text" id="otp" name="otp" class="form-control" placeholder="Enter the OTP received" required>
-            <br>
-            <br>
-            <button class="btn-block submit-btn" type="submit">Submit</button>
-        </form>
-      {{/if}}
-    </div>
+  <div class="card login-box">
+    {{#if newUser}}
+    <form action="/verifys" method="post">
+      <h3 class="bg text-light rounded">OTP Verification</h3>
+      <br>
+      <input type="text" id="mobileNumber" name="mobileNumber" class="form-control" value={{this.mobileNumber}}
+        required>
+      <br>
+      <input type="text" id="otp" name="otp" class="form-control" placeholder="Enter the OTP received" required>
+      <br>
+      <div id="timer-container">
+        Resend OTP in <span id="timer">0</span> seconds
+      </div>
+      <br>
+      <div style="display: flex;">
+        <button class="btn-block submit-btn" type="submit">Submit</button>
+        <button id="resendOtp" class="btn-block submit-btn" type="submit" style="display: none;" >Resend OTP</button>
+      </div>
+    </form>
+    {{/if}}
+    {{#if forgotUser}}
+    <form action="/forgotPasswordverifys" method="post">
+      <h3 class="bg text-light rounded">OTP Verification</h3>
+      <br>
+      <input type="text" id="mobileNumber" name="mobileNumber" class="form-control" value={{this.mobileNumber}}
+        required>
+      <br>
+      <input type="text" id="otp" name="otp" class="form-control" placeholder="Enter the OTP received" required>
+      <br>
+      <div id="timer-container">
+        Resend OTP in <span id="timer">0</span> seconds
+      </div>
+      <br>
+      <button class="btn-block submit-btn" type="submit">Submit</button>
+      <button id="resendOtp" class="btn-block submit-btn" type="submit" style="display: none;" >Resend OTP</button>
+    </form>
+    {{/if}}
+  </div>
+    <script>
+      let timerSeconds = 30;
+      const timerElement = document.getElementById("timer");
+      const resendOtpButton = document.getElementById("resendOtp");
+      function updateTimerDisplay() {
+        timerElement.textContent = timerSeconds;
+      }
+      function startTimer() {
+        updateTimerDisplay();
+        const timerInterval = setInterval(() => {
+          timerSeconds--;
+          updateTimerDisplay();
+          if (timerSeconds === 0) {
+            clearInterval(timerInterval);
+            timerElement.style.display = "none";
+            resendOtpButton.style.display = "block";
+          }
+        }, 1000);
+      }
+      startTimer();
+      resendOtpButton.addEventListener("click", () => {
+        timerSeconds = 30;
+        updateTimerDisplay();
+        timerElement.style.display = "block";
+        resendOtpButton.style.display = "none";
+        startTimer();
+      });
+      {{!-- function resendOTP(mobile) {
+        window.location.href = `/verify?mobile=${mobile}`
+      } --}}
+    </script>
 </body>
