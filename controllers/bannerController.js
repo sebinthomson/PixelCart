@@ -2,21 +2,17 @@ const bannerHelper = require("../helpers/banner-helpers");
 
 const adminBanners = async (req, res) => {
   try {
-    console.log(req.session,'adminsession')
     const banners = await bannerHelper.adminGetAllBanners();
     const itemsPerPage = 3;
     const currentPage = parseInt(req.query.page) || 1;
     const startIndex = (currentPage - 1) * itemsPerPage;
     const endIndex = startIndex + itemsPerPage;
     const paginatedBanners = banners.slice(startIndex, endIndex);
-
     const totalPages = Math.ceil(banners.length / itemsPerPage);
-
     const pages = [];
     for (let i = 1; i <= totalPages; i++) {
       pages.push(i);
     }
-
     res.render("admin/adminBanners", {
       banners: paginatedBanners,
       currentPage,
@@ -49,7 +45,6 @@ const adminAddBanner = async (req, res) => {
     if (req.files && req.files["bannerImage"]) {
       const images = req.files["bannerImage"];
       const movePromises = [];
-
         const movePromise = new Promise((resolve, reject) => {
           images.mv(
             "./public/banner-images/" + banner.id 
@@ -64,7 +59,6 @@ const adminAddBanner = async (req, res) => {
           );
         });
         movePromises.push(movePromise);
-
       Promise.all(movePromises)
         .then(() => {
           res.redirect("/admin/admin-banners");

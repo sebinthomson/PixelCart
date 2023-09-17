@@ -167,5 +167,5 @@ module.exports = {
   adminGetCoupon,
   adminEditCoupon,
   userGetCoupons,
-  userApplyCoupon
+  userApplyCoupon,
 };

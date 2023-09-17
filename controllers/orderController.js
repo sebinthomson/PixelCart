@@ -27,12 +27,26 @@ const addOrder = async (req, res) => {
       req.body.paymentMode
     ).then(async (orderId) => {
       if (req.body.paymentMode === "COD") {
-        res.json({ checkoutcomplete: true });
+        res.json({ checkoutcomplete: true, orderId });
       } else {
         await orderHelper.generateRazorpay(orderId, total).then((response) => {
-          res.json(response);
+          res.json({response,orderId});
         });
       }
+    });
+  } catch (err) {
+    console.log(err);
+    res.render('error-404')
+  }
+};
+
+const orderPlaced = async (req, res) => {
+  try {
+    await orderHelper.clearCartAndStock(req.session.user._id, req.query.orderId)
+    await orderHelper.changeOrderStatus(req.query.orderId);
+    res.render("user/order-complete", {
+      user: true,
+      title: "Order Complete",
     });
   } catch (err) {
     console.log(err);
@@ -108,13 +122,67 @@ const adminGetOrderProducts = async (req, res) => {
 
 const adminEditOrder = async (req, res) => {
   try {
-    await orderHelper.updateOrder(req.params.id, req.body);
+    const orderId = req.params.id;
+    const formData = req.body;
+    let commonProductStatus = null;
+    let count = 0;
+    let check = 0;
+    for (const key in formData) {
+      if (key.startsWith("productStatus_")) {
+        const productId = key.replace("productStatus_", "");
+        const productStatus = formData[key];
+        check++;
+        if (
+          commonProductStatus === null ||
+          commonProductStatus === productStatus
+        ) {
+          commonProductStatus = productStatus;
+          count++;
+        }
+        await orderHelper.updateProductStatus(
+          orderId,
+          productId,
+          productStatus
+        );
+      }
+    }
+    if (check === count) {
+      await orderHelper.updateOrder(orderId, { status: commonProductStatus });
+    }
     res.redirect("/admin/admin-orders");
   } catch (error) {
     console.log(error.message);
-    res.render('error-404')
+    res.render("error-404");
   }
 };
+
+const requestProductCancellation = async (req,res) => {
+  try {
+    const productStatus =  "Req Cancel" 
+    await orderHelper.userUpdateProductStatus(
+      req.query.orderId,
+      req.query.productId,
+      productStatus
+      );
+      res.redirect("/profile-orders");
+    } catch (error) {
+      console.log(error)
+    }
+  }
+  
+  const requestProductReturn = async (req,res) => {
+    try {
+    const productStatus =  "Req Return" 
+    await orderHelper.userUpdateProductStatus(
+      req.query.orderId,
+      req.query.productId,
+      productStatus
+      );
+      res.redirect("/profile-orders");
+  } catch (error) {
+    console.log(error)
+  }
+}
 
 const getOrders = async (req, res) => {
   try {
@@ -159,8 +227,22 @@ const requestCancellation = async (req, res) => {
   }
 };
 
+const requestReturn = async (req, res) => {
+  try {
+    const orderId = req.query.orderId;
+    console.log(req.query.orderId)
+    const orderdetails = {
+      status: "Req Return",
+    };
+    await orderHelper.updateOrder(orderId, orderdetails);
+    res.redirect("/profile-orders");
+  } catch (error) {
+    console.log(error.message);
+    res.render('error-404')
+  }
+};
+
 const verifyPayment = (req, res) => {
-  console.log(req.body);
   orderHelper
     .verifyPayment(req.body)
     .then(async () => {
@@ -537,11 +619,15 @@ const getOrderInvoice = async (req, res) => {
 
 module.exports = {
   addOrder,
+  orderPlaced,
   adminOrders,
   adminGetOrder,
   adminEditOrder,
+  requestProductCancellation,
+  requestProductReturn,
   getOrders,
   requestCancellation,
+  requestReturn,
   verifyPayment,
   adminGetOrderProducts,
   todaySaleExcel,

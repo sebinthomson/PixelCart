@@ -44,7 +44,6 @@ module.exports = {
   getAdminProducts: async (req, res) => {
     try {
       const products = await productHelpers.getAllProductsEvenDeleted();
-
       const itemsPerPage = 5;
       const currentPage = parseInt(req.query.page) || 1;
       const startIndex = (currentPage - 1) * itemsPerPage;
