@@ -1,5 +1,8 @@
 <!DOCTYPE HTML>
 <html>
+<head>
+	<link rel="stylesheet" type="text/css" href="/css/toastify.css">
+</head>
 <body>
 	<div class="colorlib-loader"></div>
 	<div id="page">
@@ -56,9 +59,10 @@
 						<div class="product-desc">
 							<h3>Buy {{product.name}}</h3>
 							<p class="price">
-								<span>For ₹{{product.price}}</span>
+								<span>For {{formatPrice product.price}}</span>
 							</p>
 							<p>{{product.description}}</p>
+							<p>{{product.stock}} item left</p>
 							<div class="input-group mb-4">
 								<span class="input-group-btn">
 									<button type="button" class="quantity-left-minus btn" data-type="minus"
@@ -94,6 +98,8 @@
 
 	<!-- Ajax -->
 	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.4/jquery.min.js"></script>
+	    <!-- toastify -->
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/toastify-js"></script>
 
 	<script>
 		$(document).ready(function () {
@@ -118,9 +124,22 @@
 				var productId = "{{product._id}}";
 				var quantity = parseInt($('#quantity').val());
 				var addToCartUrl = "/addToCart?id=" + productId + "&quantity=" + quantity;
-				window.location.href = addToCartUrl;
+				Toastify({
+					text: "product added to cart",
+					duration: 1000,
+					newWindow: true,
+					close: true,
+					gravity: "bottom", // `top` or `bottom`
+					position: "center", // `left`, `center` or `right`
+					stopOnFocus: true, // Prevents dismissing of toast on hover
+					style: {
+						background: "#88c8bc",
+					},
+				}).showToast();
+				setTimeout(function () {
+					window.location.href = addToCartUrl;
+				}, 1000); 
 			});
-
 		});
 	</script>
 </body>

@@ -1,4 +1,5 @@
 <html>
+
 <body>
   <div class="colorlib-loader"></div>
   <div id="page">
@@ -25,11 +26,14 @@
             <div class="col-md-12">
               <div class="product-name d-flex"
                 style="background-color: #88c8bc; border-bottom-left-radius: 0 ;border-bottom-right-radius: 0;height: 2rem;">
-                <div class="one-forth" >
-                  <h5 style="line-height: 12px; padding-left: 2rem; font-size: medium;">Order Id:{{this._id}}</h5>
+                <div class="one-forth">
+                  <h5 id="orderId" style="line-height: 12px; padding-left: 2rem; font-size: medium;">Order Id:{{this._id}}</h5>
                 </div>
                 <div class="one-forth" style="display: flex; flex-direction: row-reverse">
-                  <a style="line-height: 15px; padding-right: 2rem; color:black" href="/invoice?id={{this._id}}"><i class="icon-download"></i><strong>Invoice Download</strong></a>
+                  {{#if (neq this.status 'Order Failed')}}
+                  <a style="line-height: 15px; padding-right: 2rem; color:black" href="/invoice?id={{this._id}}"><i
+                      class="icon-download"></i><strong>Invoice Download</strong></a>
+                  {{/if}}
                 </div>
               </div>
 
@@ -44,10 +48,10 @@
                   <span>Price</span>
                 </div>
                 <div class="one-eight text-center">
-                  <span>Quantity</span>
+                  <span>Total</span>
                 </div>
                 <div class="one-eight text-center">
-                  <span>Total</span>
+                  <span>Action</span>
                 </div>
               </div>
               {{#each this.products}}
@@ -60,6 +64,7 @@
                 <div class="one-forth">
                   <div class="display-tc">
                     <h3>{{this.name}}</h3>
+                    <h3>Quantity-{{this.quantity}}, Status-{{this.productStatus}}</h3>
                   </div>
                 </div>
                 <div class="one-eight text-center">
@@ -69,30 +74,52 @@
                 </div>
                 <div class="one-eight text-center">
                   <div class="display-tc">
-                    <span class="price">{{this.quantity}}</span>
+                    <span class="price">{{multiply this.quantity this.price}}</span>
                   </div>
                 </div>
                 <div class="one-eight text-center">
                   <div class="display-tc">
-                    <span class="price">{{multiply this.quantity this.price}}</span>
+                    {{#if (or (eq this.productStatus 'Pending Approval') (eq this.productStatus 'Order Placed') (eq
+                    this.productStatus
+                    'Shipped/Dispatched') (eq this.productStatus 'Out for Delivery') )}}
+                    {{#if (or (neq this.status 'Order Failed')  (neq this.status 'Req Cancel') (neq this.status 'Req Return'))}}
+                    <button type="submit" href="#"
+                      style=" color:rgb(0, 0, 0); background-color: #88c8bc; border-radius: 7px; border: none;line-height: 1rem;"
+                      onclick="requestProductCancellation('{{this.item}}')">Req Cancellation</button>
+                    {{/if}}
+                    {{/if}}
+                    {{#if (eq this.productStatus 'Delivered')}}
+                    {{#if (or (neq this.status 'Order Failed')  (neq this.status 'Req Cancel') (neq this.status 'Req Return'))}}
+                    <button type="submit" href="#"
+                      style=" color:rgb(0, 0, 0); background-color: #88c8bc; border-radius: 7px; border: none;"
+                      onclick="requestProductReturn('{{this.item}}')">Request Return</button>
+                    {{/if }}
+                    {{/if }}
                   </div>
                 </div>
               </div>
               {{/each}}
             </div>
             <div class="col-md-12 text-center"
-              style="display: flex; justify-content: space-evenly; border-bottom: 1px solid; border-radius: 30px">
-              <a href="/requestcancellation?orderId={{this._id}}">
-                <p><button type="submit" href="#" class="btn btn-primary"
+              style="display: flex; justify-content: flex-end; border-bottom: 1px solid; border-radius: 30px">
+              {{#if (or (eq this.status 'Pending Approval') (eq this.status 'Order Placed') (eq this.status
+              'Shipped/Dispatched') (eq this.status 'Out for Delivery') )}}
+              {{#if (neq this.status 'Order Failed')}}
+              <a>
+                <p><button onclick="requestOrderCancellation('{{this._id}}')" type="submit" class="btn btn-primary"
                     style=" color:black; background-color: #88c8bc;">Request
-                    Cancellation</button></p>
+                    Order Cancellation</button></p>
               </a>
+              {{/if}}
+              {{/if}}
               {{#if (eq this.status 'Delivered')}}
-              <a href="/requestcancellation?orderId={{this._id}}">
-                <p><button type="submit" href="#" class="btn btn-primary"
+              {{#if (neq this.status 'Order Failed')}}
+              <a href="/requestReturn?orderId={{this._id}}">
+                <p><button onclick="requestOrderReturn('{{this._id}}')" type="submit" class="btn btn-primary"
                     style=" color:black; background-color: #88c8bc;">Request
-                    Return</button></p>
+                    Order Return</button></p>
               </a>
+              {{/if }}
               {{/if }}
               <p><button type="submit" href="#" class="btn btn-primary details-button"
                   style=" color:black; background-color: #88c8bc;" order-id="{{this._id}}"
@@ -133,9 +160,9 @@
       </div>
     </div>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
     <script>
       const detailsButtons = document.querySelectorAll('.details-button');
-
       detailsButtons.forEach(button => {
         button.addEventListener('click', async () => {
           const orderDate = button.getAttribute('order-orderDate');
@@ -144,7 +171,6 @@
           const orderStatus = button.getAttribute('order-status');
           const orderPaymentMode = button.getAttribute('order-paymentMode');
           const orderTotal = button.getAttribute('order-total');
-
           Swal.fire({
             title: 'Order Details',
             html: `
@@ -160,6 +186,74 @@
           });
         });
       });
+    </script>
+    <script>
+      async function requestOrderReturn(orderId) {
+        const result = await Swal.fire({
+          title: 'Confirm Order Return',
+          input: 'text',
+          inputPlaceholder: 'Enter your reason here',
+          confirmButtonText: 'Confirm',
+          confirmButtonColor: '#88c8bc',
+          showCancelButton: true,
+          inputValidator: (value) => {
+            if (!value) {
+              return 'You need to enter the reason';
+            }
+          }
+        })
+        if (result.isConfirmed) {
+          window.location.href = `/requestReturn?orderId=${orderId}`
+        }
+      }
+    </script>
+    <script>
+      async function requestOrderCancellation(orderId) {
+        const result = await Swal.fire({
+          title: 'Confirm Order Cancellation',
+          confirmButtonText: 'Confirm',
+          confirmButtonColor: '#88c8bc',
+          showCancelButton: true,
+        })
+        if (result.isConfirmed) {
+          window.location.href = `/requestcancellation?orderId=${orderId}`
+        }
+      }
+    </script>
+    <script>
+      async function requestProductReturn(productId) {
+          let orderId = document.getElementById("orderId");
+        orderId = orderId.innerHTML
+        orderId = orderId.split(":");
+        orderId = orderId[1].trim();
+         const result = await Swal.fire({
+          title: 'Confirm Product Return',
+          confirmButtonText: 'Confirm',
+          confirmButtonColor: '#88c8bc',
+          showCancelButton: true,
+        })
+        if (result.isConfirmed) {
+          window.location.href = `/requestProductReturn?orderId=${orderId}&productId=${productId}`
+        }
+      }
+    </script>
+    <script>
+      async function requestProductCancellation(productId) {
+        let orderId = document.getElementById("orderId");
+        orderId = orderId.innerHTML
+        orderId = orderId.split(":");
+        orderId = orderId[1].trim();
+        console.log(orderId,productId)
+         const result = await Swal.fire({
+          title: 'Confirm Product Return',
+          confirmButtonText: 'Confirm',
+          confirmButtonColor: '#88c8bc',
+          showCancelButton: true,
+        })
+        if (result.isConfirmed) {
+          window.location.href = `/requestProductCancellation?orderId=${orderId}&productId=${productId}`
+        }
+      }
     </script>
 </body>
 

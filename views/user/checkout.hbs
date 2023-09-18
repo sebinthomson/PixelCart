@@ -1,5 +1,9 @@
 <html>
 
+<head>
+  <link rel="stylesheet" type="text/css" href="/css/toastify.css">
+</head>
+
 <body>
   <div class="colorlib-loader"></div>
   <div id="page">
@@ -37,8 +41,9 @@
           </div>
         </div>
         <div class="row">
+          {{#if addresses.length}}
           <div class="col-lg-12">
-            <form class="colorlib-form">
+            <div class="colorlib-form">
               <h2>Select Billing Detail</h2>
               <ul class="">
                 {{#each addresses}}
@@ -50,9 +55,9 @@
               </ul>
               <a href="/profile"><span><button class="btn btn-primary" type="button">Edit Saved
                     Addresses</button></span></a>
-            </form>
+            </div>
           </div>
-
+          {{/if}}
           <div class="col-lg-8">
             <form action="/add-address" method="POST" enctype="multipart/form-data" class="colorlib-form">
               <h2>Add New Billing Details</h2>
@@ -147,10 +152,9 @@
                         {{/each}}
                       </ul>
                     </li>
-                    <li><span>Shipping</span> <span>₹0.00</span></li>
-                    <li><span>Discount</span> <span>₹{{discount}}</span></li>
+                    <li><span>Discount</span> <span>{{formatPrice discount}}</span></li>
                     <li><span>Order Total</span>
-                      <p id="totalValue">{{ this.total}}</p>
+                      <p id="totalValue">{{formatPrice this.total}}</p>
                     </li>
                   </ul>
                 </div>
@@ -168,7 +172,7 @@
                   <div class="form-group">
                     <div class="col-md-12">
                       <div class="radio">
-                        <label><input type="radio" name="paymentMode" value="COD" id="COD" />Cash On
+                        <label><input type="radio" name="paymentMode" value="COD" id="COD" checked/>Cash On
                           Delivery (COD)</label>
                       </div>
                     </div>
@@ -197,59 +201,68 @@
 
     {{#each products}}
     <script>
-      document.getElementById('{{this.product._id}}prototal').innerHTML = 
-        {{ this.product.price }}
-        *
-        {{ this.quantity }};
+      document.getElementById('{{this.product._id}}prototal').innerHTML = "₹" + Number({{this.product.price}} * {{this.quantity}}).toLocaleString("en-IN", { maximumFractionDigits: 2 });
     </script>
     {{/each}}
 
     <script>
-      document.getElementById('subtotal').innerHTML = 
-        {{ total }}
-        +
-        {{ discount }};
+      document.getElementById('subtotal').innerHTML = "₹" + Number({{total}} + {{discount}}).toLocaleString("en-IN", { maximumFractionDigits: 2 });
     </script>
 
     <!-- Ajax -->
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.4/jquery.min.js"></script>
-
+    <!-- razorpay -->
     <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
-
+    <!-- toastify -->
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/toastify-js"></script>
     <script>
       function addToOrders() {
-        const selectedAddress = document.querySelector('input[name="addressId"]:checked').value;
-        const paymentMode = document.querySelector('input[name="paymentMode"]:checked').value;
-        $.ajax({
-          url: '/addToOrders',
-          data: {
-            addressId: selectedAddress,
-            paymentMode: paymentMode
-          },
-          method: 'post',
-          success: (response) => {
-            if (response.checkoutcomplete) {
-              window.location.href = '/orderPlaced'
+        if ({{addresses.length}}) {
+          const selectedAddress = document.querySelector('input[name="addressId"]:checked').value;
+          const paymentMode = document.querySelector('input[name="paymentMode"]:checked').value;
+          $.ajax({
+            url: '/addToOrders',
+            data: {
+              addressId: selectedAddress,
+              paymentMode: paymentMode
+            },
+            method: 'post',
+            success: (response) => {
+              if (response.checkoutcomplete) {
+                window.location.href = '/orderPlaced?orderId=' + response.orderId;
+              }
+              else {
+                razorpayPayment(response.response,response.orderId)
+              }
             }
-            else {
-              razorpayPayment(response)
-            }
-          }
-        });
+          });
+        } else {
+          Toastify({
+            text: "Add an address",
+            duration: 3000,
+            newWindow: true,
+            close: true,
+            gravity: "bottom", // `top` or `bottom`
+            position: "center", // `left`, `center` or `right`
+            stopOnFocus: true, // Prevents dismissing of toast on hover
+            style: {
+              background: "#88c8bc",
+            },
+          }).showToast();
+        }
       }
 
-      function razorpayPayment(order) {
-        console.log(order)
+      function razorpayPayment(order,orderId) {
         let options = {
           "key": "rzp_test_bzZUpodgXWeMku", // Enter the Key ID generated from the Dashboard
-          "amount": order.amount , // Amount is in currency subunits. Default currency is INR. Hence, 50000 refers to 50000 paise
+          "amount": order.amount, // Amount is in currency subunits. Default currency is INR. Hence, 50000 refers to 50000 paise
           "currency": "INR",
           "name": "PixelCart",
           "description": "Test Transaction",
           "image": "https://example.com/your_logo",
           "order_id": order.id, //This is a sample Order ID. Pass the `id` obtained in the response of Step 1
           "handler": function (response) {
-            verifyPayment(response, order)
+            verifyPayment(response, order, orderId)
           },
           "prefill": {
             "name": "Gaurav Kumar",
@@ -267,7 +280,7 @@
         rzp1.open();
       }
 
-      function verifyPayment(payment, order) {
+      function verifyPayment(payment, order, orderId) {
         $.ajax({
           url: '/verifyPayment',
           data: {
@@ -276,8 +289,9 @@
           },
           method: 'post',
           success: (response) => {
+            console.log(orderId,'verifypayment')
             if (response.status) {
-              window.location.href = '/orderPlaced'
+              window.location.href = '/orderPlaced?orderId=' + orderId;
             } else {
               alert("Payment failed")
             }

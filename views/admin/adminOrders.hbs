@@ -19,7 +19,11 @@
               <tbody>
                 {{#each orders}}
                 <tr>
-                  <th scope="col">{{this._id}}</th>
+                  <th scope="col">{{this._id}}<br>
+                  {{#if this.request}}
+                  req pending
+                  {{/if}}
+                  </th>
                   <th scope="col">{{this.subTotal}}-{{this.paymentMode}}</th>
                   <th scope="col">{{this.status}}</th>
                   <td style="display: flex;justify-content: flex-start;">
@@ -91,7 +95,7 @@
         let productsHtml = '';
 
         data.orderProducts.forEach((product,index) => {
-          productsHtml += `<strong>Product ${index + 1}:</strong> ${product.name} - Quantity: ${product.quantity} - Price: ${product.price}<br>`;
+          productsHtml += `<strong>Product ${index + 1}:</strong> ${product.name} - Quantity: ${product.quantity} - Price: ${product.price} - Status: ${product.productStatus}<br>`;
         })
 
         Swal.fire({

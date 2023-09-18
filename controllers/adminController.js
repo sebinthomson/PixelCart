@@ -17,7 +17,6 @@ const adminDashboard = async (req, res) => {
     const salesData = await orderHelpers.salesData();
     const salesCount = await orderHelpers.salesCount();
     const categorySales = await orderHelpers.categorySales();
-
     res.render("./admin/adminDashboard", {
       orders,
       productsCount,

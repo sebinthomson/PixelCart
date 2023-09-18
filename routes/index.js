@@ -46,9 +46,16 @@ router.get('/deleteaddress',auth.isBlocked,auth.isLogin,userController.deleteAdd
 
 router.post('/addToOrders',auth.isBlocked,auth.isLogin,orderController.addOrder)
 router.post('/verifyPayment',auth.isBlocked,auth.isLogin,orderController.verifyPayment)
-router.get('/orderPlaced',auth.isBlocked,auth.isLogin,userController.orderPlaced)
+router.get('/orderPlaced',auth.isBlocked,auth.isLogin,orderController.orderPlaced)
 router.get('/requestcancellation',auth.isBlocked,auth.isLogin,orderController.requestCancellation)
+router.get('/requestReturn',auth.isBlocked,auth.isLogin,orderController.requestReturn)
+router.get('/requestProductCancellation',auth.isBlocked,auth.isLogin,orderController.requestProductCancellation)
+router.get('/requestProductReturn',auth.isBlocked,auth.isLogin,orderController.requestProductReturn)
 
 router.get('/logout',userController.logout)
+router.get('/test',(req,res)=>{
+    res.render('user/verify_otp',{newUser: true})
+})
+
 
 module.exports = router;

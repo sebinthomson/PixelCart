@@ -57,12 +57,16 @@ const landingPage = async (req, res) => {
 // to send verification code
 const verify = async (req, res) => {
   try {
-    const mobileNumber = req.body.mobileNumber;
+    let mobileNumber = req.body.mobileNumber;
+    console.log(mobileNumber)
+    // if(!mobileNumber){
+    //   mobileNumber = req.query.mobile
+    // }
+    // console.log(mobileNumber)
     client.verify.v2
       .services(twilioVerifySid)
       .verifications.create({ to: mobileNumber, channel: "whatsapp" })
       .then((verification) => {
-        console.log(verification.status);
         res.render("user/verify_otp", { mobileNumber, newUser: true });
       })
       .catch((error) => {
@@ -241,7 +245,6 @@ const home = async (req, res) => {
     for (let i = 1; i <= totalPages; i++) {
       pages.push(i);
     }
-
     res.render("user/index", {
       products: paginatedProducts,
       currentPage,
@@ -268,16 +271,12 @@ const filterProducts = async (req, res) => {
   const productRange = req.body.productRange;
   let sort = req.body.sort;
   const search = req.body.search;
-
   let rangefilter = []
-
   const filter ={ isDeleted: false}
-
   if(search){
     const regex = new RegExp('^' + search, 'i');
     filter.name = regex
   }
-
   if(productCategory) {
     filter.category = { $in: productCategory }
   }
@@ -312,15 +311,30 @@ const filterProducts = async (req, res) => {
       sort = { price: -1 }
     }
     if(sort == 'LH'){
-        sort = { price: 1 }
+      sort = { price: 1 }
     }
     if(sort == 'NA'){
-        sort = { date: -1 }
+      sort = { date: -1 }
     }
+  }else{
+    sort = { date: -1 }
   }
   const products = await productHelpers.getFilterBrand( filter, sort );
+  const itemsPerPage = 6;
+  let currentPage = parseInt(req.body.page);
+  if (isNaN(currentPage)) {
+    currentPage = 1;
+  }
+  const startIndex = (currentPage - 1) * itemsPerPage;
+  const endIndex = startIndex + itemsPerPage;
+  const paginatedProducts = products.slice(startIndex, endIndex);
+  const totalPages = Math.ceil(products.length / itemsPerPage);
+  const pages = [];
+  for (let i = 1; i <= totalPages; i++) {
+    pages.push(i);
+  }
   if(products.length){
-    res.json(products)
+    res.json({products:paginatedProducts, currentPage, totalPages, pages})
   } else {
     res.json({noProducts: true})
   }
@@ -329,14 +343,12 @@ const filterProducts = async (req, res) => {
 const getProductDetails = async (req, res) => {
   try {
     const id = req.query.proId;
-    const categories = await categoryHelpers.getAllCategories();
     const product = await productHelpers.getProductById({ _id: id });
     if (!product) {
       return res.redirect("/login");
     }
     res.render("user/product-detail", {
       product,
-      categories,
       user: true,
       title: "Product Detail",
     });
@@ -351,7 +363,6 @@ const proceedToCheckout = async (req, res) => {
     let discount = req.query.discount
     if(!discount) discount = 0
     let total
-    const categories = await categoryHelpers.getAllCategories();
     const addresses = await userHelper.getAddresses(req.session.user._id);
     let products = await cartHelper.getCartProducts(req.session.user._id);
     let wallet = await walletHelper. getWallet(req.session.user._id)
@@ -363,7 +374,6 @@ const proceedToCheckout = async (req, res) => {
     }
     res.render("user/checkout", {
       discount,
-      categories,
       addresses,
       products,
       total,
@@ -403,30 +413,14 @@ const addAddress = async (req, res) => {
   }
 };
 
-const orderPlaced = async (req, res) => {
-  try {
-    const categories = await categoryHelpers.getAllCategories();
-    res.render("user/order-complete", {
-      categories,
-      user: true,
-      title: "Order Complete",
-    });
-  } catch (err) {
-    console.log(err);
-    res.render('error-404')
-  }
-};
-
 const profile = async (req, res) => {
   try {
-    const categories = await categoryHelpers.getAllCategories()
     const addresses = await userHelper.getAddresses(req.session.user._id);
     let userDetails = await userHelper.findUser(req.session.user._id);
     userDetails = userDetails[0];
     res.render("user/profile", {
       addresses,
       userDetails,
-      categories,
       user: true,
       title: "Profile Management",
     });
@@ -482,7 +476,6 @@ module.exports = {
   getProductDetails,
   proceedToCheckout,
   addAddress,
-  orderPlaced,
   profile,
   editAddress,
   editUser,
