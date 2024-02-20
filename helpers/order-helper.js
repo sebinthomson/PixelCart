@@ -9,8 +9,8 @@ const walletHelper = require("../helpers/wallet-helpers")
 const Razorpay = require("razorpay");
 const { log } = require("console");
 var instance = new Razorpay({
-  key_id: 'rzp_test_bzZUpodgXWeMku',
-  key_secret: 'OFs9tn09tmXouMXz1ycRsDj8'
+  key_id: 'rzp_test_rlrLeNuyQ8mztp',
+  key_secret: 'omYjcslAo81JXmxnc9BoXyCX'
 })
 
 const placeOrder = async (userName, userId, address, products, total, paymentMode) => {

@@ -217,12 +217,14 @@
     <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/toastify-js"></script>
     <script>
       function addToOrders() {
+        let totalElement = parseFloat("{{this.total}}")
         if ({{addresses.length}}) {
           const selectedAddress = document.querySelector('input[name="addressId"]:checked').value;
           const paymentMode = document.querySelector('input[name="paymentMode"]:checked').value;
           $.ajax({
             url: '/addToOrders',
             data: {
+              finalTotal: totalElement,
               addressId: selectedAddress,
               paymentMode: paymentMode
             },
@@ -254,7 +256,7 @@
 
       function razorpayPayment(order,orderId) {
         let options = {
-          "key": "rzp_test_bzZUpodgXWeMku", // Enter the Key ID generated from the Dashboard
+          "key": "rzp_test_rlrLeNuyQ8mztp", // Enter the Key ID generated from the Dashboard
           "amount": order.amount, // Amount is in currency subunits. Default currency is INR. Hence, 50000 refers to 50000 paise
           "currency": "INR",
           "name": "PixelCart",

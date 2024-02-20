@@ -1,11 +1,11 @@
 const orderHelper = require("../helpers/order-helper");
 const cartHelper = require("../helpers/cart-helpers");
 const userHelper = require("../helpers/user-helpers");
-const exceljs = require('exceljs')
-const PdfPrinter = require('pdfmake');
-const fs = require('fs')
+const exceljs = require("exceljs");
+const PdfPrinter = require("pdfmake");
+const fs = require("fs");
 const easyinvoice = require("easyinvoice");
-const { Readable } = require('stream');
+const { Readable } = require("stream");
 
 const addOrder = async (req, res) => {
   try {
@@ -15,34 +15,38 @@ const addOrder = async (req, res) => {
     );
     address = address[0].address;
     let products = await cartHelper.getCartProducts(req.session.user._id);
-    let total = await cartHelper.getTotal(req.session.user._id);
-    total = total[0].total;
-    total = parseInt(total)
-    await orderHelper.placeOrder(
-      req.session.user.name,
-      req.session.user._id,
-      address,
-      products,
-      total,
-      req.body.paymentMode
-    ).then(async (orderId) => {
-      if (req.body.paymentMode === "COD") {
-        res.json({ checkoutcomplete: true, orderId });
-      } else {
-        await orderHelper.generateRazorpay(orderId, total).then((response) => {
-          res.json({response,orderId});
-        });
-      }
-    });
+    await orderHelper
+      .placeOrder(
+        req.session.user.name,
+        req.session.user._id,
+        address,
+        products,
+        req.body.finalTotal,
+        req.body.paymentMode
+      )
+      .then(async (orderId) => {
+        if (req.body.paymentMode === "COD") {
+          res.json({ checkoutcomplete: true, orderId });
+        } else {
+          await orderHelper
+            .generateRazorpay(orderId, req.body.finalTotal)
+            .then((response) => {
+              res.json({ response, orderId });
+            });
+        }
+      });
   } catch (err) {
     console.log(err);
-    res.render('error-404')
+    res.render("error-404");
   }
 };
 
 const orderPlaced = async (req, res) => {
   try {
-    await orderHelper.clearCartAndStock(req.session.user._id, req.query.orderId)
+    await orderHelper.clearCartAndStock(
+      req.session.user._id,
+      req.query.orderId
+    );
     await orderHelper.changeOrderStatus(req.query.orderId);
     res.render("user/order-complete", {
       user: true,
@@ -50,7 +54,7 @@ const orderPlaced = async (req, res) => {
     });
   } catch (err) {
     console.log(err);
-    res.render('error-404')
+    res.render("error-404");
   }
 };
 
@@ -81,7 +85,7 @@ const adminOrders = async (req, res) => {
     });
   } catch (err) {
     console.log(err);
-    res.render('error-404')
+    res.render("error-404");
   }
 };
 
@@ -104,20 +108,20 @@ const adminGetOrder = async (req, res) => {
     }
   } catch (error) {
     console.log(error.message);
-    res.render('error-404')
+    res.render("error-404");
   }
 };
 
 const adminGetOrderProducts = async (req, res) => {
-    try {
-      const orderId = req.query.orderId;
-      const order = await orderHelper.getOrderById({ _id: orderId });
-      const orderProducts = order.products
-      res.json({orderProducts})
-    } catch (err) {
-      console.log(err);
-      res.render('error-404')
-    }
+  try {
+    const orderId = req.query.orderId;
+    const order = await orderHelper.getOrderById({ _id: orderId });
+    const orderProducts = order.products;
+    res.json({ orderProducts });
+  } catch (err) {
+    console.log(err);
+    res.render("error-404");
+  }
 };
 
 const adminEditOrder = async (req, res) => {
@@ -156,33 +160,33 @@ const adminEditOrder = async (req, res) => {
   }
 };
 
-const requestProductCancellation = async (req,res) => {
+const requestProductCancellation = async (req, res) => {
   try {
-    const productStatus =  "Req Cancel" 
+    const productStatus = "Req Cancel";
     await orderHelper.userUpdateProductStatus(
       req.query.orderId,
       req.query.productId,
       productStatus
-      );
-      res.redirect("/profile-orders");
-    } catch (error) {
-      console.log(error)
-    }
-  }
-  
-  const requestProductReturn = async (req,res) => {
-    try {
-    const productStatus =  "Req Return" 
-    await orderHelper.userUpdateProductStatus(
-      req.query.orderId,
-      req.query.productId,
-      productStatus
-      );
-      res.redirect("/profile-orders");
+    );
+    res.redirect("/profile-orders");
   } catch (error) {
-    console.log(error)
+    console.log(error);
   }
-}
+};
+
+const requestProductReturn = async (req, res) => {
+  try {
+    const productStatus = "Req Return";
+    await orderHelper.userUpdateProductStatus(
+      req.query.orderId,
+      req.query.productId,
+      productStatus
+    );
+    res.redirect("/profile-orders");
+  } catch (error) {
+    console.log(error);
+  }
+};
 
 const getOrders = async (req, res) => {
   try {
@@ -209,7 +213,7 @@ const getOrders = async (req, res) => {
     });
   } catch (error) {
     console.log(error.message);
-    res.render('error-404')
+    res.render("error-404");
   }
 };
 
@@ -223,14 +227,14 @@ const requestCancellation = async (req, res) => {
     res.redirect("/profile-orders");
   } catch (error) {
     console.log(error.message);
-    res.render('error-404')
+    res.render("error-404");
   }
 };
 
 const requestReturn = async (req, res) => {
   try {
     const orderId = req.query.orderId;
-    console.log(req.query.orderId)
+    console.log(req.query.orderId);
     const orderdetails = {
       status: "Req Return",
     };
@@ -238,7 +242,7 @@ const requestReturn = async (req, res) => {
     res.redirect("/profile-orders");
   } catch (error) {
     console.log(error.message);
-    res.render('error-404')
+    res.render("error-404");
   }
 };
 
@@ -246,11 +250,9 @@ const verifyPayment = (req, res) => {
   orderHelper
     .verifyPayment(req.body)
     .then(async () => {
-      await orderHelper
-        .changePaymentStatus(req.body.order.receipt)
-        .then(() => {
-          res.json({ status: true });
-        });
+      await orderHelper.changePaymentStatus(req.body.order.receipt).then(() => {
+        res.json({ status: true });
+      });
     })
     .catch((error) => {
       console.log(error);
@@ -303,7 +305,10 @@ const todaySaleExcel = async (req, res) => {
       "Content-Type",
       "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
     );
-    res.setHeader("Content-Disposition", "attachment;filename=Today's_Sales.xlsx");
+    res.setHeader(
+      "Content-Disposition",
+      "attachment;filename=Today's_Sales.xlsx"
+    );
     // Send the workbook as a response
     return workbook.xlsx.write(res).then(() => {
       res.status(200).end();
@@ -353,7 +358,10 @@ const totalRevenueExcel = async (req, res) => {
       "Content-Type",
       "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
     );
-    res.setHeader("Content-Disposition", "attachment;filename=Total_Revenue.xlsx");
+    res.setHeader(
+      "Content-Disposition",
+      "attachment;filename=Total_Revenue.xlsx"
+    );
     return workbook.xlsx.write(res).then(() => {
       res.status(200);
     });
@@ -426,7 +434,12 @@ const orderDetailPDF = async (req, res) => {
         0
       );
     }
-    res.render("./admin/salesPDF", { admin: true, orders: allOrder, totalAmount, title:"Sales Report - Order View" });
+    res.render("./admin/salesPDF", {
+      admin: true,
+      orders: allOrder,
+      totalAmount,
+      title: "Sales Report - Order View",
+    });
   } catch (error) {
     console.log(error);
     res.render("error-404");
@@ -635,5 +648,5 @@ module.exports = {
   allOrderStatus,
   orderDetailPDF,
   customPDF,
-  getOrderInvoice
+  getOrderInvoice,
 };
