@@ -5,15 +5,13 @@ const cartHelper = require("../helpers/cart-helpers");
 const walletHelper = require("../helpers/wallet-helpers");
 const bannerHelper = require("../helpers/banner-helpers");
 const couponHelper = require("../helpers/coupon-helpers");
-require('dotenv').config();
-
+require("dotenv").config();
 
 // twilio otp
 const twilioAccountSid = process.env.TWILIO_ACCOUNT_SID;
 const twilioAuthToken = process.env.TWILIO_AUTH_TOKEN;
 const twilioVerifySid = process.env.TWILIO_VERIFY_SID;
 const client = require("twilio")(twilioAccountSid, twilioAuthToken);
-
 
 const landingPage = async (req, res) => {
   try {
@@ -23,7 +21,7 @@ const landingPage = async (req, res) => {
     const categories = await categoryHelpers.getAllCategories();
     const banners = await bannerHelper.userGetBanners();
     const products = await productHelpers.getAllProducts();
-    const coupons = await couponHelper.userGetCoupons()
+    const coupons = await couponHelper.userGetCoupons();
 
     const itemsPerPage = 6;
     const currentPage = parseInt(req.query.page) || 1;
@@ -50,7 +48,7 @@ const landingPage = async (req, res) => {
       userStatusLink: "/login",
     });
   } catch (error) {
-    res.render('error-404')
+    res.render("error-404");
     console.log(error.message);
   }
 };
@@ -58,11 +56,7 @@ const landingPage = async (req, res) => {
 const verify = async (req, res) => {
   try {
     let mobileNumber = req.body.mobileNumber;
-    console.log(mobileNumber)
-    // if(!mobileNumber){
-    //   mobileNumber = req.query.mobile
-    // }
-    // console.log(mobileNumber)
+    console.log(mobileNumber);
     client.verify.v2
       .services(twilioVerifySid)
       .verifications.create({ to: mobileNumber, channel: "whatsapp" })
@@ -71,10 +65,10 @@ const verify = async (req, res) => {
       })
       .catch((error) => {
         console.log(error);
-        res.send("Error occurred during OTP generation");
+        res.render("error-404", { twilliofail: true });
       });
   } catch (error) {
-    res.render('error-404')
+    res.render("error-404");
     console.log(error.message);
   }
 };
@@ -94,7 +88,7 @@ const verifys = async (req, res) => {
         res.send("Error occurred during OTP verification");
       });
   } catch (error) {
-    res.render('error-404')
+    res.render("error-404");
     console.log(error.message);
   }
 };
@@ -114,7 +108,7 @@ const forgotPasswordverify = async (req, res) => {
         res.send("Error occurred during OTP generation");
       });
   } catch (error) {
-    res.render('error-404')
+    res.render("error-404");
     console.log(error.message);
   }
 };
@@ -134,7 +128,7 @@ const forgotPasswordverifys = async (req, res) => {
         res.send("Error occurred during OTP verification");
       });
   } catch (error) {
-    res.render('error-404')
+    res.render("error-404");
     console.log(error.message);
   }
 };
@@ -150,14 +144,14 @@ const changedPassword = async (req, res) => {
       } else if (stat === "USER_ALREADY_EXISTS") res.redirect("/login");
     });
   } catch (error) {
-    res.render('error-404')
+    res.render("error-404");
     console.log(error.message);
   }
 };
 
 const signup = async (req, res) => {
   try {
-    const {name, email, mobile, password} = req.body;
+    const { name, email, mobile, password } = req.body;
     const user = { name, email, mobile, password };
     userHelper.addUser(user, (stat) => {
       if (stat === "DONE") {
@@ -165,7 +159,7 @@ const signup = async (req, res) => {
       } else if (stat === "USER_ALREADY_EXISTS") res.redirect("/login");
     });
   } catch (error) {
-    res.render('error-404')
+    res.render("error-404");
     console.log(error.message);
   }
 };
@@ -181,7 +175,7 @@ const login = async (req, res) => {
     });
     req.session.loginErr = false;
   } catch (error) {
-    res.render('error-404')
+    res.render("error-404");
     console.log(error.message);
   }
 };
@@ -213,7 +207,7 @@ const forgotPassword = async (req, res) => {
     res.render("user/forgotpasswordotp");
   } catch (error) {
     console.log(error);
-    res.render('error-404')
+    res.render("error-404");
   }
 };
 
@@ -233,7 +227,7 @@ const home = async (req, res) => {
     const categories = await categoryHelpers.getAllCategories();
     const products = await productHelpers.getAllProducts();
     const banners = await bannerHelper.userGetBanners();
-    const coupons = await couponHelper.userGetCoupons()
+    const coupons = await couponHelper.userGetCoupons();
 
     const itemsPerPage = 6;
     const currentPage = parseInt(req.query.page) || 1;
@@ -259,7 +253,7 @@ const home = async (req, res) => {
       title: "Home",
     });
   } catch (error) {
-    res.render('error-404')
+    res.render("error-404");
     console.log(error.message);
   }
 };
@@ -271,55 +265,55 @@ const filterProducts = async (req, res) => {
   const productRange = req.body.productRange;
   let sort = req.body.sort;
   const search = req.body.search;
-  let rangefilter = []
-  const filter ={ isDeleted: false}
-  if(search){
-    const regex = new RegExp('^' + search, 'i');
-    filter.name = regex
+  let rangefilter = [];
+  const filter = { isDeleted: false };
+  if (search) {
+    const regex = new RegExp("^" + search, "i");
+    filter.name = regex;
   }
-  if(productCategory) {
-    filter.category = { $in: productCategory }
+  if (productCategory) {
+    filter.category = { $in: productCategory };
   }
-  if(productBrand) {
-    filter.brand = { $in: productBrand }
+  if (productBrand) {
+    filter.brand = { $in: productBrand };
   }
-  if(productColor) {
-    filter.color = { $in: productColor }
+  if (productColor) {
+    filter.color = { $in: productColor };
   }
-  if(productRange) {
+  if (productRange) {
     for (let i = 0; i < productRange.length; i++) {
-      if(productRange[i] == 'lt1000') {
-        rangefilter.push({ price: { $lte: 1000 } })
+      if (productRange[i] == "lt1000") {
+        rangefilter.push({ price: { $lte: 1000 } });
       }
-      if(productRange[i] == 'lt1500') {
-        rangefilter.push({ price: { $gt: 1000, $lte: 1500 } })
+      if (productRange[i] == "lt1500") {
+        rangefilter.push({ price: { $gt: 1000, $lte: 1500 } });
       }
-      if(productRange[i] == 'lt2000') {
-          rangefilter.push({ price: { $gt: 1500, $lte: 2000 } })
+      if (productRange[i] == "lt2000") {
+        rangefilter.push({ price: { $gt: 1500, $lte: 2000 } });
       }
-      if(productRange[i] == 'lt2500') {
-          rangefilter.push({ price: { $gt: 2000, $lte: 2500 } })
+      if (productRange[i] == "lt2500") {
+        rangefilter.push({ price: { $gt: 2000, $lte: 2500 } });
       }
-      if(productRange[i] == 'gt2500') {
-          rangefilter.push({ price: { $gt: 2500} })
+      if (productRange[i] == "gt2500") {
+        rangefilter.push({ price: { $gt: 2500 } });
       }
     }
-    filter.$or = rangefilter
+    filter.$or = rangefilter;
   }
-  if(sort){
-    if(sort == 'HL'){
-      sort = { price: -1 }
+  if (sort) {
+    if (sort == "HL") {
+      sort = { price: -1 };
     }
-    if(sort == 'LH'){
-      sort = { price: 1 }
+    if (sort == "LH") {
+      sort = { price: 1 };
     }
-    if(sort == 'NA'){
-      sort = { date: -1 }
+    if (sort == "NA") {
+      sort = { date: -1 };
     }
-  }else{
-    sort = { date: -1 }
+  } else {
+    sort = { date: -1 };
   }
-  const products = await productHelpers.getFilterBrand( filter, sort );
+  const products = await productHelpers.getFilterBrand(filter, sort);
   const itemsPerPage = 6;
   let currentPage = parseInt(req.body.page);
   if (isNaN(currentPage)) {
@@ -333,10 +327,10 @@ const filterProducts = async (req, res) => {
   for (let i = 1; i <= totalPages; i++) {
     pages.push(i);
   }
-  if(products.length){
-    res.json({products:paginatedProducts, currentPage, totalPages, pages})
+  if (products.length) {
+    res.json({ products: paginatedProducts, currentPage, totalPages, pages });
   } else {
-    res.json({noProducts: true})
+    res.json({ noProducts: true });
   }
 };
 
@@ -354,23 +348,23 @@ const getProductDetails = async (req, res) => {
     });
   } catch (err) {
     console.log(err);
-    res.render('error-404')
+    res.render("error-404");
   }
 };
 
 const proceedToCheckout = async (req, res) => {
   try {
-    let discount = req.query.discount
-    if(!discount) discount = 0
-    let total
+    let discount = req.query.discount;
+    if (!discount) discount = 0;
+    let total;
     const addresses = await userHelper.getAddresses(req.session.user._id);
     let products = await cartHelper.getCartProducts(req.session.user._id);
-    let wallet = await walletHelper. getWallet(req.session.user._id)
-    if(products.length === 0){
-      total = 0
+    let wallet = await walletHelper.getWallet(req.session.user._id);
+    if (products.length === 0) {
+      total = 0;
     } else {
       total = await cartHelper.getTotal(req.session.user._id);
-      total = total[0].total - discount
+      total = total[0].total - discount;
     }
     res.render("user/checkout", {
       discount,
@@ -383,7 +377,7 @@ const proceedToCheckout = async (req, res) => {
     });
   } catch (err) {
     console.log(err);
-    res.render('error-404')
+    res.render("error-404");
   }
 };
 
@@ -409,7 +403,7 @@ const addAddress = async (req, res) => {
     res.redirect("proceedToCheckout");
   } catch (err) {
     console.log(err);
-    res.render('error-404')
+    res.render("error-404");
   }
 };
 
@@ -426,7 +420,7 @@ const profile = async (req, res) => {
     });
   } catch (error) {
     console.log(error);
-    res.render('error-404')
+    res.render("error-404");
   }
 };
 
@@ -448,7 +442,7 @@ const editUser = async (req, res) => {
     res.redirect("/profile");
   } catch (error) {
     console.log(error);
-    res.render('error-404')
+    res.render("error-404");
   }
 };
 
@@ -460,7 +454,7 @@ const deleteAddress = async (req, res) => {
     res.redirect("/profile");
   } catch (error) {
     console.log(error);
-    res.render('error-404')
+    res.render("error-404");
   }
 };
 
